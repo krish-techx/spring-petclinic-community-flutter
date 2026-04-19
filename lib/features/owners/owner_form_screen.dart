@@ -1,0 +1,201 @@
+import 'package:flutter/material.dart';
+
+import '../../shared/forms/app_validators.dart';
+import 'owner.dart';
+import 'owner_service.dart';
+
+class OwnerFormScreen extends StatefulWidget {
+  const OwnerFormScreen({super.key, this.owner});
+
+  final Owner? owner;
+
+  @override
+  State<OwnerFormScreen> createState() => _OwnerFormScreenState();
+}
+
+class _OwnerFormScreenState extends State<OwnerFormScreen> {
+  final OwnerService _ownerService = OwnerService();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
+  late final TextEditingController _addressController;
+  late final TextEditingController _cityController;
+  late final TextEditingController _telephoneController;
+
+  bool _isSaving = false;
+  String? _errorMessage;
+
+  bool get _isEditing => widget.owner != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _firstNameController = TextEditingController(
+      text: widget.owner?.firstName ?? '',
+    );
+    _lastNameController = TextEditingController(
+      text: widget.owner?.lastName ?? '',
+    );
+    _addressController = TextEditingController(
+      text: widget.owner?.address ?? '',
+    );
+    _cityController = TextEditingController(text: widget.owner?.city ?? '');
+    _telephoneController = TextEditingController(
+      text: widget.owner?.telephone ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    _telephoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final form = _formKey.currentState;
+    if (form == null || !form.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+      _errorMessage = null;
+    });
+
+    final owner = Owner(
+      id: widget.owner?.id,
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      address: _addressController.text.trim(),
+      city: _cityController.text.trim(),
+      telephone: _telephoneController.text.trim(),
+      pets: widget.owner?.pets ?? const [],
+    );
+
+    try {
+      if (_isEditing) {
+        await _ownerService.updateOwner(owner);
+      } else {
+        await _ownerService.createOwner(owner);
+      }
+
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).pop(true);
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _errorMessage = error.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(_isEditing ? 'Edit Owner' : 'New Owner')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (_errorMessage != null) ...[
+            Card(
+              color: Theme.of(context).colorScheme.errorContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(_errorMessage!),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _firstNameController,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(labelText: 'First Name'),
+                  validator: AppValidators.plainText(
+                    'First name',
+                    minLength: 1,
+                    maxLength: 30,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _lastNameController,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(labelText: 'Last Name'),
+                  validator: AppValidators.plainText(
+                    'Last name',
+                    minLength: 1,
+                    maxLength: 30,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _addressController,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(labelText: 'Address'),
+                  validator: AppValidators.plainText(
+                    'Address',
+                    minLength: 1,
+                    maxLength: 255,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _cityController,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(labelText: 'City'),
+                  validator: AppValidators.plainText(
+                    'City',
+                    minLength: 1,
+                    maxLength: 80,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _telephoneController,
+                  textInputAction: TextInputAction.done,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'Telephone'),
+                  validator: AppValidators.exactDigits('Telephone', length: 10),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: _isSaving ? null : _save,
+                    icon: _isSaving
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save_outlined),
+                    label: Text(_isEditing ? 'Save Owner' : 'Add Owner'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
