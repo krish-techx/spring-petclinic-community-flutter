@@ -1,5 +1,7 @@
 # Spring Petclinic Flutter
 
+[![Flutter CI](https://github.com/San-43/spring-petclinic-flutter/actions/workflows/dart.yml/badge.svg?branch=master)](https://github.com/San-43/spring-petclinic-flutter/actions/workflows/dart.yml)
+
 Flutter frontend for Spring Petclinic. This app targets Android and web, mirrors
 the functional flows of the Angular frontend, and uses the same REST backend exposed by
 `spring-petclinic-rest`.
