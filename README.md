@@ -6,6 +6,13 @@ Flutter frontend for Spring Petclinic. This app targets Android and web, mirrors
 the functional flows of the Angular frontend, and uses the same REST backend exposed by
 `spring-petclinic-rest`.
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/home.jpeg" width="260" alt="Spring Petclinic home screen" />
+  <img src="docs/screenshots/owner-details.jpeg" width="260" alt="Spring Petclinic owner details screen" />
+</p>
+
 ## Backend
 
 Start the backend first:
