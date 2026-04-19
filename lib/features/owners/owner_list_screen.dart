@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/widgets/page_width.dart';
 import 'owner.dart';
 import 'owner_detail_screen.dart';
 import 'owner_form_screen.dart';
@@ -68,9 +69,7 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
 
   Future<void> _openOwnerForm() async {
     final changed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => const OwnerFormScreen(),
-      ),
+      MaterialPageRoute<bool>(builder: (_) => const OwnerFormScreen()),
     );
     if (changed == true) {
       await _loadOwners(lastName: _activeQuery);
@@ -91,47 +90,56 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Owners'),
-      ),
+      appBar: AppBar(title: const Text('Owners')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openOwnerForm,
         icon: const Icon(Icons.add),
         label: const Text('Add Owner'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
+      body: AppPageWidth(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final stacked = constraints.maxWidth < 520;
+                  final field = TextField(
                     controller: _searchController,
                     textInputAction: TextInputAction.search,
                     decoration: const InputDecoration(
                       labelText: 'Last name',
                       prefixIcon: Icon(Icons.search),
                     ),
-                    onSubmitted: (_) => _loadOwners(
-                      lastName: _searchController.text.trim(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                FilledButton(
-                  onPressed: () => _loadOwners(
-                    lastName: _searchController.text.trim(),
-                  ),
-                  child: const Text('Find'),
-                ),
-              ],
+                    onSubmitted: (_) =>
+                        _loadOwners(lastName: _searchController.text.trim()),
+                  );
+                  final button = FilledButton(
+                    onPressed: () =>
+                        _loadOwners(lastName: _searchController.text.trim()),
+                    child: const Text('Find'),
+                  );
+
+                  if (stacked) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [field, const SizedBox(height: 12), button],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      Expanded(child: field),
+                      const SizedBox(width: 12),
+                      button,
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-          Expanded(
-            child: _buildContent(),
-          ),
-        ],
+            Expanded(child: _buildContent()),
+          ],
+        ),
       ),
     );
   }
@@ -148,10 +156,7 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-              ),
+              Text(_errorMessage!, textAlign: TextAlign.center),
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () => _loadOwners(lastName: _activeQuery),

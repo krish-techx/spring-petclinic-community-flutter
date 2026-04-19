@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/forms/app_validators.dart';
+import '../../shared/widgets/page_width.dart';
 import 'owner.dart';
 import 'owner_service.dart';
 
@@ -108,93 +109,99 @@ class _OwnerFormScreenState extends State<OwnerFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(_isEditing ? 'Edit Owner' : 'New Owner')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (_errorMessage != null) ...[
-            Card(
-              color: Theme.of(context).colorScheme.errorContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(_errorMessage!),
+      body: AppPageWidth(
+        maxWidth: 720,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (_errorMessage != null) ...[
+              Card(
+                color: Theme.of(context).colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(_errorMessage!),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _firstNameController,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(labelText: 'First Name'),
+                    validator: AppValidators.plainText(
+                      'First name',
+                      minLength: 1,
+                      maxLength: 30,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _lastNameController,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(labelText: 'Last Name'),
+                    validator: AppValidators.plainText(
+                      'Last name',
+                      minLength: 1,
+                      maxLength: 30,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _addressController,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(labelText: 'Address'),
+                    validator: AppValidators.plainText(
+                      'Address',
+                      minLength: 1,
+                      maxLength: 255,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _cityController,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(labelText: 'City'),
+                    validator: AppValidators.plainText(
+                      'City',
+                      minLength: 1,
+                      maxLength: 80,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _telephoneController,
+                    textInputAction: TextInputAction.done,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(labelText: 'Telephone'),
+                    validator: AppValidators.exactDigits(
+                      'Telephone',
+                      length: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: _isSaving ? null : _save,
+                      icon: _isSaving
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(_isEditing ? 'Save Owner' : 'Add Owner'),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
           ],
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _firstNameController,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'First Name'),
-                  validator: AppValidators.plainText(
-                    'First name',
-                    minLength: 1,
-                    maxLength: 30,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _lastNameController,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'Last Name'),
-                  validator: AppValidators.plainText(
-                    'Last name',
-                    minLength: 1,
-                    maxLength: 30,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _addressController,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'Address'),
-                  validator: AppValidators.plainText(
-                    'Address',
-                    minLength: 1,
-                    maxLength: 255,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _cityController,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'City'),
-                  validator: AppValidators.plainText(
-                    'City',
-                    minLength: 1,
-                    maxLength: 80,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _telephoneController,
-                  textInputAction: TextInputAction.done,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Telephone'),
-                  validator: AppValidators.exactDigits('Telephone', length: 10),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: _isSaving ? null : _save,
-                    icon: _isSaving
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.save_outlined),
-                    label: Text(_isEditing ? 'Save Owner' : 'Add Owner'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

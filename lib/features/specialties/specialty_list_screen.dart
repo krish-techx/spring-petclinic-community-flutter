@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/widgets/confirmation_dialog.dart';
+import '../../shared/widgets/page_width.dart';
 import 'specialty.dart';
 import 'specialty_form_screen.dart';
 import 'specialty_service.dart';
@@ -109,7 +110,7 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
         icon: const Icon(Icons.add),
         label: const Text('Add'),
       ),
-      body: _buildBody(),
+      body: AppPageWidth(child: _buildBody()),
     );
   }
 

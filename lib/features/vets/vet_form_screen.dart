@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/forms/app_validators.dart';
+import '../../shared/widgets/page_width.dart';
 import '../specialties/specialty.dart';
 import '../specialties/specialty_service.dart';
 import 'vet.dart';
@@ -159,145 +160,148 @@ class _VetFormScreenState extends State<VetFormScreen> {
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Veterinarian' : 'New Veterinarian'),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null && _specialties.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_errorMessage!, textAlign: TextAlign.center),
-                    const SizedBox(height: 12),
-                    FilledButton(
-                      onPressed: _loadData,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (_errorMessage != null) ...[
-                  Card(
-                    color: Theme.of(context).colorScheme.errorContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(_errorMessage!),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                Form(
-                  key: _formKey,
+      body: AppPageWidth(
+        maxWidth: 720,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null && _specialties.isEmpty
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextFormField(
-                        controller: _firstNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'First Name',
-                        ),
-                        validator: AppValidators.plainText(
-                          'First name',
-                          minLength: 1,
-                          maxLength: 30,
-                        ),
-                      ),
+                      Text(_errorMessage!, textAlign: TextAlign.center),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _lastNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Last Name',
-                        ),
-                        validator: AppValidators.plainText(
-                          'Last name',
-                          minLength: 1,
-                          maxLength: 30,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (_isEditing)
-                        InputDecorator(
-                          decoration: const InputDecoration(
-                            labelText: 'Specialties',
-                          ),
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _specialties
-                                .map(
-                                  (specialty) => FilterChip(
-                                    label: Text(specialty.name),
-                                    selected: _selectedSpecialtyIds.contains(
-                                      specialty.id,
-                                    ),
-                                    onSelected: (selected) {
-                                      setState(() {
-                                        if (selected) {
-                                          _selectedSpecialtyIds.add(
-                                            specialty.id!,
-                                          );
-                                        } else {
-                                          _selectedSpecialtyIds.remove(
-                                            specialty.id,
-                                          );
-                                        }
-                                      });
-                                    },
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        )
-                      else
-                        DropdownButtonFormField<Specialty?>(
-                          initialValue: _selectedSpecialty,
-                          decoration: const InputDecoration(
-                            labelText: 'Specialty',
-                          ),
-                          items: [
-                            const DropdownMenuItem<Specialty?>(
-                              value: null,
-                              child: Text('No specialty'),
-                            ),
-                            ..._specialties.map(
-                              (specialty) => DropdownMenuItem<Specialty?>(
-                                value: specialty,
-                                child: Text(specialty.name),
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedSpecialty = value;
-                            });
-                          },
-                        ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: _isSaving ? null : _save,
-                          icon: _isSaving
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.save_outlined),
-                          label: Text(_isEditing ? 'Save Vet' : 'Add Vet'),
-                        ),
+                      FilledButton(
+                        onPressed: _loadData,
+                        child: const Text('Retry'),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              )
+            : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (_errorMessage != null) ...[
+                    Card(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(_errorMessage!),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _firstNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'First Name',
+                          ),
+                          validator: AppValidators.plainText(
+                            'First name',
+                            minLength: 1,
+                            maxLength: 30,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _lastNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Last Name',
+                          ),
+                          validator: AppValidators.plainText(
+                            'Last name',
+                            minLength: 1,
+                            maxLength: 30,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        if (_isEditing)
+                          InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'Specialties',
+                            ),
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _specialties
+                                  .map(
+                                    (specialty) => FilterChip(
+                                      label: Text(specialty.name),
+                                      selected: _selectedSpecialtyIds.contains(
+                                        specialty.id,
+                                      ),
+                                      onSelected: (selected) {
+                                        setState(() {
+                                          if (selected) {
+                                            _selectedSpecialtyIds.add(
+                                              specialty.id!,
+                                            );
+                                          } else {
+                                            _selectedSpecialtyIds.remove(
+                                              specialty.id,
+                                            );
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          )
+                        else
+                          DropdownButtonFormField<Specialty?>(
+                            initialValue: _selectedSpecialty,
+                            decoration: const InputDecoration(
+                              labelText: 'Specialty',
+                            ),
+                            items: [
+                              const DropdownMenuItem<Specialty?>(
+                                value: null,
+                                child: Text('No specialty'),
+                              ),
+                              ..._specialties.map(
+                                (specialty) => DropdownMenuItem<Specialty?>(
+                                  value: specialty,
+                                  child: Text(specialty.name),
+                                ),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedSpecialty = value;
+                              });
+                            },
+                          ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: _isSaving ? null : _save,
+                            icon: _isSaving
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.save_outlined),
+                            label: Text(_isEditing ? 'Save Vet' : 'Add Vet'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }

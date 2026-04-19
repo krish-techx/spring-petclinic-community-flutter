@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/forms/app_validators.dart';
 import '../../shared/utils/date_utils.dart';
+import '../../shared/widgets/page_width.dart';
 import '../owners/owner.dart';
 import '../owners/owner_service.dart';
 import '../pettypes/pet_type.dart';
@@ -192,125 +193,128 @@ class _PetFormScreenState extends State<PetFormScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(_isEditing ? 'Edit Pet' : 'Add Pet')),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null && _owner == null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_errorMessage!, textAlign: TextAlign.center),
-                    const SizedBox(height: 12),
-                    FilledButton(
-                      onPressed: _loadData,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (_errorMessage != null) ...[
-                  Card(
-                    color: Theme.of(context).colorScheme.errorContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(_errorMessage!),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Owner',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(_owner?.fullName ?? ''),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Form(
-                  key: _formKey,
+      body: AppPageWidth(
+        maxWidth: 720,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null && _owner == null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(labelText: 'Name'),
-                        validator: AppValidators.plainText(
-                          'Name',
-                          minLength: 1,
-                          maxLength: 30,
-                        ),
-                      ),
+                      Text(_errorMessage!, textAlign: TextAlign.center),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _birthDateController,
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Birth Date',
-                          suffixIcon: Icon(Icons.calendar_today_outlined),
-                        ),
-                        onTap: _pickBirthDate,
-                        validator: AppValidators.required('Birth date'),
-                      ),
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<PetType>(
-                        initialValue: _selectedType,
-                        decoration: const InputDecoration(labelText: 'Type'),
-                        items: petTypeItems
-                            .map(
-                              (petType) => DropdownMenuItem<PetType>(
-                                value: petType,
-                                child: Text(petType.name),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedType = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Pet type is required.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: _isSaving ? null : _save,
-                          icon: _isSaving
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.save_outlined),
-                          label: Text(_isEditing ? 'Update Pet' : 'Save Pet'),
-                        ),
+                      FilledButton(
+                        onPressed: _loadData,
+                        child: const Text('Retry'),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              )
+            : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (_errorMessage != null) ...[
+                    Card(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(_errorMessage!),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Owner',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(_owner?.fullName ?? ''),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(labelText: 'Name'),
+                          validator: AppValidators.plainText(
+                            'Name',
+                            minLength: 1,
+                            maxLength: 30,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _birthDateController,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Birth Date',
+                            suffixIcon: Icon(Icons.calendar_today_outlined),
+                          ),
+                          onTap: _pickBirthDate,
+                          validator: AppValidators.required('Birth date'),
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<PetType>(
+                          initialValue: _selectedType,
+                          decoration: const InputDecoration(labelText: 'Type'),
+                          items: petTypeItems
+                              .map(
+                                (petType) => DropdownMenuItem<PetType>(
+                                  value: petType,
+                                  child: Text(petType.name),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedType = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Pet type is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: _isSaving ? null : _save,
+                            icon: _isSaving
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.save_outlined),
+                            label: Text(_isEditing ? 'Update Pet' : 'Save Pet'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }

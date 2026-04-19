@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/widgets/confirmation_dialog.dart';
+import '../../shared/widgets/page_width.dart';
 import '../pets/pet.dart';
 import '../pets/pet_form_screen.dart';
 import '../pets/pet_service.dart';
@@ -220,178 +221,185 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Owner Details')),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_errorMessage!, textAlign: TextAlign.center),
-                    const SizedBox(height: 12),
-                    FilledButton(
-                      onPressed: _loadOwner,
-                      child: const Text('Retry'),
-                    ),
-                  ],
+      body: AppPageWidth(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(_errorMessage!, textAlign: TextAlign.center),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: _loadOwner,
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          : owner == null
-          ? const Center(child: Text('Owner not found.'))
-          : RefreshIndicator(
-              onRefresh: _loadOwner,
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            owner.fullName,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: 12),
-                          _DetailRow(label: 'Address', value: owner.address),
-                          _DetailRow(label: 'City', value: owner.city),
-                          _DetailRow(
-                            label: 'Telephone',
-                            value: owner.telephone,
-                          ),
-                          const SizedBox(height: 16),
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 12,
-                            children: [
-                              FilledButton.tonalIcon(
-                                onPressed: _openOwnerForm,
-                                icon: const Icon(Icons.edit_outlined),
-                                label: const Text('Edit Owner'),
-                              ),
-                              FilledButton.tonalIcon(
-                                onPressed: _deleteOwner,
-                                icon: const Icon(Icons.delete_outline),
-                                label: const Text('Delete Owner'),
-                              ),
-                              FilledButton.icon(
-                                onPressed: () => _openPetForm(),
-                                icon: const Icon(Icons.add),
-                                label: const Text('Add Pet'),
-                              ),
-                            ],
-                          ),
-                        ],
+              )
+            : owner == null
+            ? const Center(child: Text('Owner not found.'))
+            : RefreshIndicator(
+                onRefresh: _loadOwner,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  children: [
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              owner.fullName,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                            const SizedBox(height: 12),
+                            _DetailRow(label: 'Address', value: owner.address),
+                            _DetailRow(label: 'City', value: owner.city),
+                            _DetailRow(
+                              label: 'Telephone',
+                              value: owner.telephone,
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: [
+                                FilledButton.tonalIcon(
+                                  onPressed: _openOwnerForm,
+                                  icon: const Icon(Icons.edit_outlined),
+                                  label: const Text('Edit Owner'),
+                                ),
+                                FilledButton.tonalIcon(
+                                  onPressed: _deleteOwner,
+                                  icon: const Icon(Icons.delete_outline),
+                                  label: const Text('Delete Owner'),
+                                ),
+                                FilledButton.icon(
+                                  onPressed: () => _openPetForm(),
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('Add Pet'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Pets and Visits',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  if (owner.pets.isEmpty)
-                    const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('No pets registered for this owner.'),
-                      ),
-                    )
-                  else
-                    for (final pet in owner.pets)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  pet.name,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                ),
-                                const SizedBox(height: 8),
-                                _DetailRow(
-                                  label: 'Birth Date',
-                                  value: pet.birthDate,
-                                ),
-                                _DetailRow(label: 'Type', value: pet.type.name),
-                                const SizedBox(height: 12),
-                                Wrap(
-                                  spacing: 12,
-                                  runSpacing: 12,
-                                  children: [
-                                    FilledButton.tonalIcon(
-                                      onPressed: () =>
-                                          _openPetForm(petId: pet.id),
-                                      icon: const Icon(Icons.edit_outlined),
-                                      label: const Text('Edit Pet'),
-                                    ),
-                                    FilledButton.tonalIcon(
-                                      onPressed: () => _deletePet(pet),
-                                      icon: const Icon(Icons.delete_outline),
-                                      label: const Text('Delete Pet'),
-                                    ),
-                                    FilledButton.icon(
-                                      onPressed: () =>
-                                          _openVisitForm(petId: pet.id),
-                                      icon: const Icon(Icons.add),
-                                      label: const Text('Add Visit'),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Visits',
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                const SizedBox(height: 8),
-                                if (pet.visits.isEmpty)
-                                  const Text('No visits registered.')
-                                else
-                                  for (final visit in pet.visits)
-                                    Card.outlined(
-                                      child: ListTile(
-                                        title: Text(visit.description),
-                                        subtitle: Text(visit.date),
-                                        trailing: Wrap(
-                                          spacing: 4,
-                                          children: [
-                                            IconButton(
-                                              onPressed: () => _openVisitForm(
-                                                visitId: visit.id,
+                    const SizedBox(height: 16),
+                    Text(
+                      'Pets and Visits',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    if (owner.pets.isEmpty)
+                      const Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text('No pets registered for this owner.'),
+                        ),
+                      )
+                    else
+                      for (final pet in owner.pets)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    pet.name,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  _DetailRow(
+                                    label: 'Birth Date',
+                                    value: pet.birthDate,
+                                  ),
+                                  _DetailRow(
+                                    label: 'Type',
+                                    value: pet.type.name,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Wrap(
+                                    spacing: 12,
+                                    runSpacing: 12,
+                                    children: [
+                                      FilledButton.tonalIcon(
+                                        onPressed: () =>
+                                            _openPetForm(petId: pet.id),
+                                        icon: const Icon(Icons.edit_outlined),
+                                        label: const Text('Edit Pet'),
+                                      ),
+                                      FilledButton.tonalIcon(
+                                        onPressed: () => _deletePet(pet),
+                                        icon: const Icon(Icons.delete_outline),
+                                        label: const Text('Delete Pet'),
+                                      ),
+                                      FilledButton.icon(
+                                        onPressed: () =>
+                                            _openVisitForm(petId: pet.id),
+                                        icon: const Icon(Icons.add),
+                                        label: const Text('Add Visit'),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Visits',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  if (pet.visits.isEmpty)
+                                    const Text('No visits registered.')
+                                  else
+                                    for (final visit in pet.visits)
+                                      Card.outlined(
+                                        child: ListTile(
+                                          title: Text(visit.description),
+                                          subtitle: Text(visit.date),
+                                          trailing: Wrap(
+                                            spacing: 4,
+                                            children: [
+                                              IconButton(
+                                                onPressed: () => _openVisitForm(
+                                                  visitId: visit.id,
+                                                ),
+                                                icon: const Icon(
+                                                  Icons.edit_outlined,
+                                                ),
                                               ),
-                                              icon: const Icon(
-                                                Icons.edit_outlined,
+                                              IconButton(
+                                                onPressed: () =>
+                                                    _deleteVisit(visit),
+                                                icon: const Icon(
+                                                  Icons.delete_outline,
+                                                ),
                                               ),
-                                            ),
-                                            IconButton(
-                                              onPressed: () =>
-                                                  _deleteVisit(visit),
-                                              icon: const Icon(
-                                                Icons.delete_outline,
-                                              ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                ],
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

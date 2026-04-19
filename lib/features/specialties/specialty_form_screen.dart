@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/forms/app_validators.dart';
+import '../../shared/widgets/page_width.dart';
 import 'specialty.dart';
 import 'specialty_service.dart';
 
@@ -84,51 +85,54 @@ class _SpecialtyFormScreenState extends State<SpecialtyFormScreen> {
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Specialty' : 'New Specialty'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (_errorMessage != null) ...[
-            Card(
-              color: Theme.of(context).colorScheme.errorContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(_errorMessage!),
+      body: AppPageWidth(
+        maxWidth: 720,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (_errorMessage != null) ...[
+              Card(
+                color: Theme.of(context).colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(_errorMessage!),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                    validator: AppValidators.plainText(
+                      'Name',
+                      minLength: 1,
+                      maxLength: 80,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: _isSaving ? null : _save,
+                      icon: _isSaving
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(_isEditing ? 'Update' : 'Save'),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
           ],
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                  validator: AppValidators.plainText(
-                    'Name',
-                    minLength: 1,
-                    maxLength: 80,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: _isSaving ? null : _save,
-                    icon: _isSaving
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.save_outlined),
-                    label: Text(_isEditing ? 'Update' : 'Save'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

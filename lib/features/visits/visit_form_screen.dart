@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/forms/app_validators.dart';
 import '../../shared/utils/date_utils.dart';
+import '../../shared/widgets/page_width.dart';
 import '../owners/owner.dart';
 import '../owners/owner_service.dart';
 import '../pets/pet.dart';
@@ -177,133 +178,139 @@ class _VisitFormScreenState extends State<VisitFormScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(_isEditing ? 'Edit Visit' : 'New Visit')),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null && pet == null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_errorMessage!, textAlign: TextAlign.center),
-                    const SizedBox(height: 12),
-                    FilledButton(
-                      onPressed: _loadData,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (_errorMessage != null) ...[
-                  Card(
-                    color: Theme.of(context).colorScheme.errorContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(_errorMessage!),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Pet',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 12),
-                        _VisitDetailRow(label: 'Name', value: pet?.name ?? ''),
-                        _VisitDetailRow(
-                          label: 'Birth Date',
-                          value: pet?.birthDate ?? '',
-                        ),
-                        _VisitDetailRow(
-                          label: 'Type',
-                          value: pet?.type.name ?? '',
-                        ),
-                        _VisitDetailRow(
-                          label: 'Owner',
-                          value: owner?.fullName ?? '',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Form(
-                  key: _formKey,
+      body: AppPageWidth(
+        maxWidth: 720,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null && pet == null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextFormField(
-                        controller: _dateController,
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Date',
-                          suffixIcon: Icon(Icons.calendar_today_outlined),
-                        ),
-                        onTap: _pickVisitDate,
-                        validator: AppValidators.required('Date'),
-                      ),
+                      Text(_errorMessage!, textAlign: TextAlign.center),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _descriptionController,
-                        maxLines: 3,
-                        decoration: const InputDecoration(
-                          labelText: 'Description',
-                        ),
-                        validator: AppValidators.plainText(
-                          'Description',
-                          minLength: 1,
-                          maxLength: 255,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: _isSaving ? null : _save,
-                          icon: _isSaving
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.save_outlined),
-                          label: Text(
-                            _isEditing ? 'Update Visit' : 'Add Visit',
-                          ),
-                        ),
+                      FilledButton(
+                        onPressed: _loadData,
+                        child: const Text('Retry'),
                       ),
                     ],
                   ),
                 ),
-                if (!_isEditing && (pet?.visits.isNotEmpty ?? false)) ...[
-                  const SizedBox(height: 20),
-                  Text(
-                    'Previous Visits',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  for (final visit in pet!.visits)
-                    Card.outlined(
-                      child: ListTile(
-                        title: Text(visit.description),
-                        subtitle: Text(visit.date),
+              )
+            : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (_errorMessage != null) ...[
+                    Card(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(_errorMessage!),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                  ],
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pet',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 12),
+                          _VisitDetailRow(
+                            label: 'Name',
+                            value: pet?.name ?? '',
+                          ),
+                          _VisitDetailRow(
+                            label: 'Birth Date',
+                            value: pet?.birthDate ?? '',
+                          ),
+                          _VisitDetailRow(
+                            label: 'Type',
+                            value: pet?.type.name ?? '',
+                          ),
+                          _VisitDetailRow(
+                            label: 'Owner',
+                            value: owner?.fullName ?? '',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _dateController,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Date',
+                            suffixIcon: Icon(Icons.calendar_today_outlined),
+                          ),
+                          onTap: _pickVisitDate,
+                          validator: AppValidators.required('Date'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _descriptionController,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            labelText: 'Description',
+                          ),
+                          validator: AppValidators.plainText(
+                            'Description',
+                            minLength: 1,
+                            maxLength: 255,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: _isSaving ? null : _save,
+                            icon: _isSaving
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.save_outlined),
+                            label: Text(
+                              _isEditing ? 'Update Visit' : 'Add Visit',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!_isEditing && (pet?.visits.isNotEmpty ?? false)) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      'Previous Visits',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    for (final visit in pet!.visits)
+                      Card.outlined(
+                        child: ListTile(
+                          title: Text(visit.description),
+                          subtitle: Text(visit.date),
+                        ),
+                      ),
+                  ],
                 ],
-              ],
-            ),
+              ),
+      ),
     );
   }
 }

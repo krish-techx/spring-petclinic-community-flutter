@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/widgets/confirmation_dialog.dart';
+import '../../shared/widgets/page_width.dart';
 import 'vet.dart';
 import 'vet_form_screen.dart';
 import 'vet_service.dart';
@@ -109,7 +110,7 @@ class _VetListScreenState extends State<VetListScreen> {
         icon: const Icon(Icons.add),
         label: const Text('Add Vet'),
       ),
-      body: _buildBody(),
+      body: AppPageWidth(child: _buildBody()),
     );
   }
 
