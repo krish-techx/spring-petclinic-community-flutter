@@ -115,3 +115,9 @@ flutter test
 flutter build apk --debug
 flutter build web
 ```
+
+## Contributing
+
+The [issue tracker](https://github.com/San-43/spring-petclinic-flutter/issues) is the preferred channel for bug reports, feature requests, and submitting pull requests.
+
+For pull requests, please keep the existing Flutter and Dart code style and make sure the validation commands listed above pass before submitting changes.
