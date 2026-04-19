@@ -1,12 +1,12 @@
 {
-    "name": "spring_petclinic_flutter",
-    "short_name": "spring_petclinic_flutter",
+    "name": "Spring Petclinic",
+    "short_name": "Petclinic",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#F5F7F4",
+    "theme_color": "#2B7A4B",
+    "description": "Spring Petclinic frontend for Android and web backed by the Spring Petclinic REST API.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
