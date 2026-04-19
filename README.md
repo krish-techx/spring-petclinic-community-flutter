@@ -1,7 +1,7 @@
 # Spring Petclinic Flutter
 
-Flutter mobile frontend for Spring Petclinic. This app mirrors the functional
-flows of the Angular frontend and targets the same REST backend exposed by
+Flutter frontend for Spring Petclinic. This app targets Android and web, mirrors
+the functional flows of the Angular frontend, and uses the same REST backend exposed by
 `spring-petclinic-rest`.
 
 ## Backend
@@ -19,27 +19,40 @@ The expected API is:
 http://localhost:9966/petclinic/api
 ```
 
-## Android base URL
+## API configuration
 
-For Android emulators, the app defaults to:
+The app resolves the API base URL in this order:
 
-```text
-http://10.0.2.2:9966/petclinic/api
-```
+1. `PETCLINIC_API_BASE_URL` passed with `--dart-define`
+2. Platform default
 
-That value is defined in:
+Platform defaults:
+
+- Android emulator: `http://10.0.2.2:9966/petclinic/api`
+- Web: `http://localhost:9966/petclinic/api`
+- Other non-Android platforms: `http://localhost:9966/petclinic/api`
+
+That logic lives in:
 
 ```text
 lib/shared/config/api_config.dart
 ```
 
-You can override it at runtime:
+Override it at runtime when needed:
 
 ```bash
 flutter run --dart-define=PETCLINIC_API_BASE_URL=http://<host>:9966/petclinic/api
 ```
 
-## Run
+Use an explicit override when:
+
+- running on a physical Android device;
+- serving the web app against a backend that is not on `localhost`;
+- pointing the app to a shared/staging backend.
+
+## Run on Android
+
+For an Android emulator:
 
 ```bash
 cd ~/spring-petclinic-flutter
@@ -47,12 +60,49 @@ flutter pub get
 flutter run
 ```
 
+For a physical Android device, pass the host machine IP explicitly:
+
+```bash
+flutter run --dart-define=PETCLINIC_API_BASE_URL=http://<host>:9966/petclinic/api
+```
+
+## Run on Web
+
+For local browser development against the backend running on the same machine:
+
+```bash
+cd ~/spring-petclinic-flutter
+flutter pub get
+flutter run -d chrome
+```
+
+If the backend is not reachable at `http://localhost:9966/petclinic/api`, pass an override:
+
+```bash
+flutter run -d chrome --dart-define=PETCLINIC_API_BASE_URL=http://<host>:9966/petclinic/api
+```
+
+## Build
+
+Build an Android debug APK:
+
+```bash
+flutter build apk --debug
+```
+
+Build the web app:
+
+```bash
+flutter build web
+```
+
 ## Validation
 
-Verified locally with:
+Typical checks:
 
 ```bash
 flutter analyze
 flutter test
 flutter build apk --debug
+flutter build web
 ```
