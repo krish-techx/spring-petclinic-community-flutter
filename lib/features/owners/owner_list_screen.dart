@@ -16,7 +16,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../../shared/widgets/page_width.dart';
+import '../../shared/widgets/classic_scaffold.dart';
 import 'owner.dart';
 import 'owner_detail_screen.dart';
 import 'owner_form_screen.dart';
@@ -105,57 +105,56 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Owners')),
+    return ClassicScaffold(
+      section: ClassicSection.owners,
+      title: 'Owners',
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openOwnerForm,
         icon: const Icon(Icons.add),
         label: const Text('Add Owner'),
       ),
-      body: AppPageWidth(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final stacked = constraints.maxWidth < 520;
-                  final field = TextField(
-                    controller: _searchController,
-                    textInputAction: TextInputAction.search,
-                    decoration: const InputDecoration(
-                      labelText: 'Last name',
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                    onSubmitted: (_) =>
-                        _loadOwners(lastName: _searchController.text.trim()),
-                  );
-                  final button = FilledButton(
-                    onPressed: () =>
-                        _loadOwners(lastName: _searchController.text.trim()),
-                    child: const Text('Find'),
-                  );
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final stacked = constraints.maxWidth < 520;
+                final field = TextField(
+                  controller: _searchController,
+                  textInputAction: TextInputAction.search,
+                  decoration: const InputDecoration(
+                    labelText: 'Last name',
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  onSubmitted: (_) =>
+                      _loadOwners(lastName: _searchController.text.trim()),
+                );
+                final button = FilledButton(
+                  onPressed: () =>
+                      _loadOwners(lastName: _searchController.text.trim()),
+                  child: const Text('Find'),
+                );
 
-                  if (stacked) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [field, const SizedBox(height: 12), button],
-                    );
-                  }
-
-                  return Row(
-                    children: [
-                      Expanded(child: field),
-                      const SizedBox(width: 12),
-                      button,
-                    ],
+                if (stacked) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [field, const SizedBox(height: 12), button],
                   );
-                },
-              ),
+                }
+
+                return Row(
+                  children: [
+                    Expanded(child: field),
+                    const SizedBox(width: 12),
+                    button,
+                  ],
+                );
+              },
             ),
-            Expanded(child: _buildContent()),
-          ],
-        ),
+          ),
+          Expanded(child: _buildContent()),
+        ],
       ),
     );
   }

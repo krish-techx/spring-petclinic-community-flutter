@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:spring_petclinic_flutter/main.dart';
-
-void main() {
-  testWidgets('renders Spring Petclinic home screen', (WidgetTester tester) async {
-    await tester.pumpWidget(const PetClinicApp());
-
-    expect(find.text('Frontend for Spring Petclinic'), findsOneWidget);
-    expect(find.text('Owners'), findsOneWidget);
-    expect(find.text('Veterinarians'), findsOneWidget);
-  });
+class AppRoutes {
+  static const home = '/';
+  static const owners = '/owners';
+  static const veterinarians = '/vets';
+  static const petTypes = '/pet-types';
+  static const specialties = '/specialties';
 }

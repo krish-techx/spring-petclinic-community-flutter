@@ -17,7 +17,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/widgets/confirmation_dialog.dart';
-import '../../shared/widgets/page_width.dart';
+import '../../shared/widgets/classic_scaffold.dart';
 import 'specialty.dart';
 import 'specialty_form_screen.dart';
 import 'specialty_service.dart';
@@ -119,14 +119,15 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Specialties')),
+    return ClassicScaffold(
+      section: ClassicSection.specialties,
+      title: 'Specialties',
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add),
         label: const Text('Add'),
       ),
-      body: AppPageWidth(child: _buildBody()),
+      body: _buildBody(),
     );
   }
 

@@ -17,7 +17,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/widgets/confirmation_dialog.dart';
-import '../../shared/widgets/page_width.dart';
+import '../../shared/widgets/classic_scaffold.dart';
 import 'pet_type.dart';
 import 'pet_type_form_screen.dart';
 import 'pet_type_service.dart';
@@ -119,14 +119,15 @@ class _PetTypeListScreenState extends State<PetTypeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pet Types')),
+    return ClassicScaffold(
+      section: ClassicSection.petTypes,
+      title: 'Pet Types',
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add),
         label: const Text('Add'),
       ),
-      body: AppPageWidth(child: _buildBody()),
+      body: _buildBody(),
     );
   }
 

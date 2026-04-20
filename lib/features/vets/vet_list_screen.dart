@@ -17,7 +17,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/widgets/confirmation_dialog.dart';
-import '../../shared/widgets/page_width.dart';
+import '../../shared/widgets/classic_scaffold.dart';
 import 'vet.dart';
 import 'vet_form_screen.dart';
 import 'vet_service.dart';
@@ -119,14 +119,15 @@ class _VetListScreenState extends State<VetListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Veterinarians')),
+    return ClassicScaffold(
+      section: ClassicSection.veterinarians,
+      title: 'Veterinarians',
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add),
         label: const Text('Add Vet'),
       ),
-      body: AppPageWidth(child: _buildBody()),
+      body: _buildBody(),
     );
   }
 

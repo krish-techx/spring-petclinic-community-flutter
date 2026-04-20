@@ -58,6 +58,20 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/images/icon_flutter.png
+    - assets/images/spring-logo-dataflow-mobile.png
+    - assets/images/spring-logo-dataflow.png
+    - assets/images/spring-pivotal-logo.png
+
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/montserrat-webfont.ttf
+    - family: VarelaRound
+      fonts:
+        - asset: assets/fonts/varela_round-webfont.ttf
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

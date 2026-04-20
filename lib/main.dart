@@ -17,6 +17,12 @@
 import 'package:flutter/material.dart';
 
 import 'features/home/home_screen.dart';
+import 'features/owners/owner_list_screen.dart';
+import 'features/pettypes/pet_type_list_screen.dart';
+import 'features/specialties/specialty_list_screen.dart';
+import 'features/vets/vet_list_screen.dart';
+import 'shared/navigation/app_routes.dart';
+import 'shared/theme/classic_theme.dart';
 
 void main() {
   runApp(const PetClinicApp());
@@ -30,18 +36,15 @@ class PetClinicApp extends StatelessWidget {
     return MaterialApp(
       title: 'Spring Petclinic',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2B7A4B),
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF5F7F4),
-        useMaterial3: true,
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-        ),
-      ),
-      home: const HomeScreen(),
+      theme: ClassicPalette.buildTheme(),
+      initialRoute: AppRoutes.home,
+      routes: {
+        AppRoutes.home: (_) => const HomeScreen(),
+        AppRoutes.owners: (_) => const OwnerListScreen(),
+        AppRoutes.veterinarians: (_) => const VetListScreen(),
+        AppRoutes.petTypes: (_) => const PetTypeListScreen(),
+        AppRoutes.specialties: (_) => const SpecialtyListScreen(),
+      },
     );
   }
 }
