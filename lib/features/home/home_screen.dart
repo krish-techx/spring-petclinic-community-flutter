@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/config/api_config.dart';
 import '../../shared/navigation/app_routes.dart';
+import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/classic_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -28,25 +29,21 @@ class HomeScreen extends StatelessWidget {
     final entries = <_HomeEntry>[
       _HomeEntry(
         title: 'Owners',
-        subtitle: 'Search owners, open details, add pets and visits.',
         icon: Icons.people_alt_outlined,
         routeName: AppRoutes.owners,
       ),
       _HomeEntry(
         title: 'Veterinarians',
-        subtitle: 'List, create, edit and delete vets.',
         icon: Icons.medical_services_outlined,
         routeName: AppRoutes.veterinarians,
       ),
       _HomeEntry(
         title: 'Pet Types',
-        subtitle: 'Manage the catalog of pet types.',
         icon: Icons.pets_outlined,
         routeName: AppRoutes.petTypes,
       ),
       _HomeEntry(
         title: 'Specialties',
-        subtitle: 'Manage veterinarian specialties.',
         icon: Icons.list_alt_outlined,
         routeName: AppRoutes.specialties,
       ),
@@ -57,50 +54,62 @@ class HomeScreen extends StatelessWidget {
       title: 'Spring Petclinic',
       showPageTitle: false,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
         children: [
-          Card(
+          Text(
+            'Welcome to Petclinic',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 20),
+          Text('Welcome', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 12),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: ClassicPalette.border),
+            ),
             child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Frontend for Spring Petclinic',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'This app targets the same REST API used by the Angular frontend.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  SelectableText(
-                    'API: ${ApiConfig.baseUrl}',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+              padding: const EdgeInsets.all(16),
+              child: Image.asset('assets/images/pets.png', fit: BoxFit.contain),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Jump directly to a section:',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final entry in entries)
+                OutlinedButton.icon(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(entry.routeName),
+                  icon: Icon(entry.icon, size: 18),
+                  label: Text(entry.title),
+                ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Text(
+            'This app targets the same REST API used by the Angular frontend.',
+          ),
+          const SizedBox(height: 10),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: ClassicPalette.border),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: SelectableText(
+                'API: ${ApiConfig.baseUrl}',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          for (final entry in entries)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Card(
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  leading: CircleAvatar(child: Icon(entry.icon)),
-                  title: Text(entry.title),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(entry.subtitle),
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.of(context).pushNamed(entry.routeName),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -110,13 +119,11 @@ class HomeScreen extends StatelessWidget {
 class _HomeEntry {
   const _HomeEntry({
     required this.title,
-    required this.subtitle,
     required this.icon,
     required this.routeName,
   });
 
   final String title;
-  final String subtitle;
   final IconData icon;
   final String routeName;
 }

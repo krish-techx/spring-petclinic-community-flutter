@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../shared/navigation/app_routes.dart';
+import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/confirmation_dialog.dart';
 import '../../shared/widgets/classic_scaffold.dart';
 import 'specialty.dart';
@@ -122,11 +124,6 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
     return ClassicScaffold(
       section: ClassicSection.specialties,
       title: 'Specialties',
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(),
-        icon: const Icon(Icons.add),
-        label: const Text('Add'),
-      ),
       body: _buildBody(),
     );
   }
@@ -156,36 +153,122 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
     }
 
     if (_specialties.isEmpty) {
-      return const Center(child: Text('No specialties found.'));
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        children: [
+          const Text('No specialties found.'),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                child: const Text('Home'),
+              ),
+              OutlinedButton(
+                onPressed: () => _openForm(),
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+        ],
+      );
     }
 
     return RefreshIndicator(
       onRefresh: _loadSpecialties,
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-        itemCount: _specialties.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final specialty = _specialties[index];
-          return Card(
-            child: ListTile(
-              title: Text(specialty.name),
-              trailing: Wrap(
-                spacing: 4,
-                children: [
-                  IconButton(
-                    onPressed: () => _openForm(specialty: specialty),
-                    icon: const Icon(Icons.edit_outlined),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final tableWidth = constraints.maxWidth < 620
+                  ? 620.0
+                  : constraints.maxWidth;
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: tableWidth,
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Actions')),
+                    ],
+                    rows: [
+                      for (var index = 0; index < _specialties.length; index++)
+                        DataRow.byIndex(
+                          index: index,
+                          color: WidgetStatePropertyAll(
+                            index.isEven
+                                ? Colors.white
+                                : const Color(0xFFF8F8F8),
+                          ),
+                          cells: [
+                            DataCell(
+                              DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: ClassicPalette.border,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 8,
+                                  ),
+                                  child: Text(_specialties[index].name),
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  OutlinedButton(
+                                    onPressed: () => _openForm(
+                                      specialty: _specialties[index],
+                                    ),
+                                    child: const Text('Edit'),
+                                  ),
+                                  OutlinedButton(
+                                    onPressed: () =>
+                                        _deleteSpecialty(_specialties[index]),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => _deleteSpecialty(specialty),
-                    icon: const Icon(Icons.delete_outline),
-                  ),
-                ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                child: const Text('Home'),
               ),
-            ),
-          );
-        },
+              OutlinedButton(
+                onPressed: () => _openForm(),
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

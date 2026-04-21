@@ -60,6 +60,7 @@ flutter:
 
   assets:
     - assets/images/icon_flutter.png
+    - assets/images/pets.png
     - assets/images/spring-logo-dataflow-mobile.png
     - assets/images/spring-logo-dataflow.png
     - assets/images/spring-pivotal-logo.png

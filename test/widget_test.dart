@@ -19,10 +19,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spring_petclinic_flutter/main.dart';
 
 void main() {
-  testWidgets('renders Spring Petclinic home screen', (WidgetTester tester) async {
+  testWidgets('renders Spring Petclinic home screen', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const PetClinicApp());
 
-    expect(find.text('Frontend for Spring Petclinic'), findsOneWidget);
+    expect(find.text('Welcome to Petclinic'), findsOneWidget);
     expect(find.text('Owners'), findsOneWidget);
     expect(find.text('Veterinarians'), findsOneWidget);
   });
