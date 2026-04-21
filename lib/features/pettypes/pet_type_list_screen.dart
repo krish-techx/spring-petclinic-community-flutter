@@ -232,11 +232,13 @@ class _PetTypeListScreenState extends State<PetTypeListScreen> {
                                   OutlinedButton(
                                     onPressed: () =>
                                         _openForm(petType: _petTypes[index]),
+                                    style: ClassicPalette.editButtonStyle(),
                                     child: const Text('Edit'),
                                   ),
                                   OutlinedButton(
                                     onPressed: () =>
                                         _deletePetType(_petTypes[index]),
+                                    style: ClassicPalette.deleteButtonStyle(),
                                     child: const Text('Delete'),
                                   ),
                                 ],

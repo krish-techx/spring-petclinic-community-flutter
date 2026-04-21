@@ -251,7 +251,7 @@ class _PetFormScreenState extends State<PetFormScreen> {
                         children: [
                           Text(
                             'Owner',
-                            style: Theme.of(context).textTheme.labelLarge,
+                            style: Theme.of(context).textTheme.titleSmall,
                           ),
                           const SizedBox(height: 8),
                           Text(_owner?.fullName ?? ''),

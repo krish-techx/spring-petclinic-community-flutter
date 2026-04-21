@@ -233,11 +233,13 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
                                     onPressed: () => _openForm(
                                       specialty: _specialties[index],
                                     ),
+                                    style: ClassicPalette.editButtonStyle(),
                                     child: const Text('Edit'),
                                   ),
                                   OutlinedButton(
                                     onPressed: () =>
                                         _deleteSpecialty(_specialties[index]),
+                                    style: ClassicPalette.deleteButtonStyle(),
                                     child: const Text('Delete'),
                                   ),
                                 ],

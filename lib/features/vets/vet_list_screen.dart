@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/navigation/app_routes.dart';
+import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/confirmation_dialog.dart';
 import '../../shared/widgets/classic_scaffold.dart';
 import 'vet.dart';
@@ -227,10 +228,12 @@ class _VetListScreenState extends State<VetListScreen> {
                                   OutlinedButton(
                                     onPressed: () =>
                                         _openForm(vetId: _vets[index].id),
+                                    style: ClassicPalette.editButtonStyle(),
                                     child: const Text('Edit Vet'),
                                   ),
                                   OutlinedButton(
                                     onPressed: () => _deleteVet(_vets[index]),
+                                    style: ClassicPalette.deleteButtonStyle(),
                                     child: const Text('Delete Vet'),
                                   ),
                                 ],

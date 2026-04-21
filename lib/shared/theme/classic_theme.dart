@@ -21,9 +21,49 @@ class ClassicPalette {
   static const navbar = Color(0xFF34302D);
   static const tableHeader = Color(0xFF3C3834);
   static const accent = Color(0xFF6DB33F);
+  static const danger = Color(0xFFD9534F);
+  static const muted = Color(0xFF777777);
   static const background = Color(0xFFF1F1F1);
   static const surface = Colors.white;
   static const border = Color(0xFFD9D9D9);
+  static const buttonBorderRadius = BorderRadius.all(Radius.circular(4));
+
+  static ButtonStyle editButtonStyle({EdgeInsetsGeometry? padding}) {
+    return _actionButtonStyle(accent, padding: padding);
+  }
+
+  static ButtonStyle deleteButtonStyle({EdgeInsetsGeometry? padding}) {
+    return _actionButtonStyle(danger, padding: padding);
+  }
+
+  static ButtonStyle backButtonStyle({EdgeInsetsGeometry? padding}) {
+    return FilledButton.styleFrom(
+      backgroundColor: muted,
+      foregroundColor: Colors.white,
+      side: BorderSide.none,
+      shape: const RoundedRectangleBorder(borderRadius: buttonBorderRadius),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      visualDensity: VisualDensity.compact,
+      minimumSize: const Size(0, 38),
+    );
+  }
+
+  static ButtonStyle _actionButtonStyle(
+    Color color, {
+    EdgeInsetsGeometry? padding,
+  }) {
+    return OutlinedButton.styleFrom(
+      foregroundColor: color,
+      backgroundColor: surface,
+      side: BorderSide(color: color),
+      shape: const RoundedRectangleBorder(borderRadius: buttonBorderRadius),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      visualDensity: VisualDensity.compact,
+      minimumSize: const Size(0, 38),
+    );
+  }
 
   static ThemeData buildTheme() {
     final base = ThemeData.light(useMaterial3: false);
@@ -35,7 +75,7 @@ class ClassicPalette {
     final textTheme = bodyTextTheme.copyWith(
       headlineMedium: bodyTextTheme.headlineMedium?.copyWith(
         fontFamily: 'Montserrat',
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w400,
       ),
       headlineSmall: bodyTextTheme.headlineSmall?.copyWith(
         fontFamily: 'Montserrat',
@@ -46,16 +86,20 @@ class ClassicPalette {
         fontWeight: FontWeight.w700,
       ),
       titleMedium: bodyTextTheme.titleMedium?.copyWith(
-        fontFamily: 'Montserrat',
+        fontFamily: 'VarelaRound',
         fontWeight: FontWeight.w700,
       ),
       titleSmall: bodyTextTheme.titleSmall?.copyWith(
-        fontFamily: 'Montserrat',
+        fontFamily: 'VarelaRound',
         fontWeight: FontWeight.w700,
       ),
       labelLarge: bodyTextTheme.labelLarge?.copyWith(
-        fontFamily: 'Montserrat',
-        fontWeight: FontWeight.w700,
+        fontFamily: 'VarelaRound',
+        fontWeight: FontWeight.w400,
+      ),
+      labelMedium: bodyTextTheme.labelMedium?.copyWith(
+        fontFamily: 'VarelaRound',
+        fontWeight: FontWeight.w400,
       ),
     );
 
@@ -109,7 +153,8 @@ class ClassicPalette {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: accent,
-          textStyle: textTheme.labelLarge,
+          shape: const RoundedRectangleBorder(borderRadius: buttonBorderRadius),
+          textStyle: textTheme.bodyMedium,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -117,11 +162,11 @@ class ClassicPalette {
           foregroundColor: text,
           backgroundColor: surface,
           side: const BorderSide(color: border),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          shape: const RoundedRectangleBorder(borderRadius: buttonBorderRadius),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           visualDensity: VisualDensity.compact,
           minimumSize: const Size(0, 38),
-          textStyle: textTheme.labelLarge,
+          textStyle: textTheme.bodyMedium,
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -129,11 +174,11 @@ class ClassicPalette {
           backgroundColor: navbar,
           foregroundColor: Colors.white,
           side: const BorderSide(color: accent, width: 1.5),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          shape: const RoundedRectangleBorder(borderRadius: buttonBorderRadius),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           visualDensity: VisualDensity.compact,
           minimumSize: const Size(0, 38),
-          textStyle: textTheme.labelLarge,
+          textStyle: textTheme.bodyMedium,
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -141,7 +186,7 @@ class ClassicPalette {
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: accent, width: 1.5),
-          borderRadius: BorderRadius.all(Radius.zero),
+          borderRadius: buttonBorderRadius,
         ),
       ),
       dataTableTheme: DataTableThemeData(

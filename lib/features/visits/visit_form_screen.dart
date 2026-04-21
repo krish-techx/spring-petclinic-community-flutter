@@ -346,7 +346,7 @@ class _VisitDetailRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 88,
-            child: Text(label, style: Theme.of(context).textTheme.labelLarge),
+            child: Text(label, style: Theme.of(context).textTheme.titleSmall),
           ),
           Expanded(child: Text(value)),
         ],
