@@ -8,9 +8,17 @@ the functional flows of the Angular frontend, and uses the same REST backend exp
 
 ## Screenshots
 
+### Web
+
 <p align="center">
-  <img src="docs/screenshots/home.jpeg" width="260" alt="Spring Petclinic home screen" />
-  <img src="docs/screenshots/owner-details.jpeg" width="260" alt="Spring Petclinic owner details screen" />
+  <img src="docs/screenshots/web-owners.png" width="900" alt="Spring Petclinic owners screen on web" />
+</p>
+
+### Android
+
+<p align="center">
+  <img src="docs/screenshots/mobile-home.jpeg" width="260" alt="Spring Petclinic home screen on Android" />
+  <img src="docs/screenshots/mobile-owner-details.jpeg" width="260" alt="Spring Petclinic owner details screen on Android" />
 </p>
 
 ## Backend
