@@ -24,14 +24,16 @@ import 'owner_form_screen.dart';
 import 'owner_service.dart';
 
 class OwnerListScreen extends StatefulWidget {
-  const OwnerListScreen({super.key});
+  const OwnerListScreen({super.key, this.ownerService});
+
+  final OwnerService? ownerService;
 
   @override
   State<OwnerListScreen> createState() => _OwnerListScreenState();
 }
 
 class _OwnerListScreenState extends State<OwnerListScreen> {
-  final OwnerService _ownerService = OwnerService();
+  late final OwnerService _ownerService = widget.ownerService ?? OwnerService();
   final TextEditingController _searchController = TextEditingController();
 
   bool _isLoading = true;
@@ -153,9 +155,21 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
       final message = _activeQuery.isEmpty
           ? 'No owners found.'
           : 'No owners with last name starting with "$_activeQuery".';
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Align(alignment: Alignment.topLeft, child: Text(message)),
+      final supportingMessage = _activeQuery.isEmpty
+          ? 'Add an owner to get started.'
+          : 'Try a different last name or add a new owner.';
+      return RefreshIndicator(
+        onRefresh: () => _loadOwners(lastName: _activeQuery),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+          children: [
+            _OwnersEmptyState(
+              message: message,
+              supportingMessage: supportingMessage,
+              onAddOwner: _openOwnerForm,
+            ),
+          ],
+        ),
       );
     }
 
@@ -181,7 +195,7 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
               );
             },
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerLeft,
             child: FilledButton(
@@ -190,6 +204,50 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _OwnersEmptyState extends StatelessWidget {
+  const _OwnersEmptyState({
+    required this.message,
+    required this.supportingMessage,
+    required this.onAddOwner,
+  });
+
+  final String message;
+  final String supportingMessage;
+  final VoidCallback onAddOwner;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: ClassicPalette.border),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.person_search_outlined,
+              size: 42,
+              color: ClassicPalette.accent,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(supportingMessage, textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            FilledButton(onPressed: onAddOwner, child: const Text('Add Owner')),
+          ],
+        ),
       ),
     );
   }

@@ -17,8 +17,8 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/theme/classic_theme.dart';
-import '../../shared/widgets/confirmation_dialog.dart';
 import '../../shared/widgets/classic_scaffold.dart';
+import '../../shared/widgets/confirmation_dialog.dart';
 import '../pets/pet.dart';
 import '../pets/pet_form_screen.dart';
 import '../pets/pet_service.dart';
@@ -103,11 +103,20 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
       return;
     }
 
+    if (owner!.pets.isNotEmpty) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Delete this owner\'s pets first.')),
+      );
+      return;
+    }
+
     final confirmed = await showConfirmationDialog(
       context,
       title: 'Delete owner?',
-      message:
-          'Delete ${owner!.fullName} and all associated pets and visits? This action cannot be undone.',
+      message: 'Delete ${owner.fullName}? This action cannot be undone.',
       confirmLabel: 'Delete',
     );
     if (!confirmed) {
@@ -271,11 +280,17 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      OutlinedButton(
+                      FilledButton(
+                        style: ClassicPalette.backButtonStyle(),
                         onPressed: () => Navigator.of(context).pop(),
                         child: const Text('Back'),
                       ),
                       FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: ClassicPalette.navbar,
+                          foregroundColor: Colors.white,
+                          side: BorderSide.none,
+                        ),
                         onPressed: _openOwnerForm,
                         child: const Text('Edit Owner'),
                       ),
@@ -289,6 +304,7 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                         child: const Text('Add New Pet'),
                       ),
                       OutlinedButton(
+                        style: ClassicPalette.deleteButtonStyle(),
                         onPressed: _deleteOwner,
                         child: const Text('Delete Owner'),
                       ),
@@ -445,9 +461,14 @@ class _PetInfoPanel extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            OutlinedButton(onPressed: onEditPet, child: const Text('Edit Pet')),
+            OutlinedButton(
+              onPressed: onEditPet,
+              style: ClassicPalette.editButtonStyle(),
+              child: const Text('Edit Pet'),
+            ),
             OutlinedButton(
               onPressed: onDeletePet,
+              style: ClassicPalette.deleteButtonStyle(),
               child: const Text('Delete Pet'),
             ),
             OutlinedButton(
@@ -529,7 +550,7 @@ class _VisitsPanel extends StatelessWidget {
                         children: [
                           OutlinedButton(
                             onPressed: () => onEditVisit(visits[index]),
-                            style: OutlinedButton.styleFrom(
+                            style: ClassicPalette.editButtonStyle(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 8,
@@ -539,7 +560,7 @@ class _VisitsPanel extends StatelessWidget {
                           ),
                           OutlinedButton(
                             onPressed: () => onDeleteVisit(visits[index]),
-                            style: OutlinedButton.styleFrom(
+                            style: ClassicPalette.deleteButtonStyle(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 8,
@@ -592,7 +613,7 @@ class _ClassicInfoTable extends StatelessWidget {
                   ),
                   child: Text(
                     rows[index].label,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
                 Padding(
