@@ -16,8 +16,10 @@
 
 import 'package:flutter/material.dart';
 
+import '../../shared/navigation/app_routes.dart';
+import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/confirmation_dialog.dart';
-import '../../shared/widgets/page_width.dart';
+import '../../shared/widgets/classic_scaffold.dart';
 import 'pet_type.dart';
 import 'pet_type_form_screen.dart';
 import 'pet_type_service.dart';
@@ -119,14 +121,10 @@ class _PetTypeListScreenState extends State<PetTypeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pet Types')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(),
-        icon: const Icon(Icons.add),
-        label: const Text('Add'),
-      ),
-      body: AppPageWidth(child: _buildBody()),
+    return ClassicScaffold(
+      section: ClassicSection.petTypes,
+      title: 'Pet Types',
+      body: _buildBody(),
     );
   }
 
@@ -155,36 +153,123 @@ class _PetTypeListScreenState extends State<PetTypeListScreen> {
     }
 
     if (_petTypes.isEmpty) {
-      return const Center(child: Text('No pet types found.'));
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        children: [
+          const Text('No pet types found.'),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                child: const Text('Home'),
+              ),
+              OutlinedButton(
+                onPressed: () => _openForm(),
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+        ],
+      );
     }
 
     return RefreshIndicator(
       onRefresh: _loadPetTypes,
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-        itemCount: _petTypes.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final petType = _petTypes[index];
-          return Card(
-            child: ListTile(
-              title: Text(petType.name),
-              trailing: Wrap(
-                spacing: 4,
-                children: [
-                  IconButton(
-                    onPressed: () => _openForm(petType: petType),
-                    icon: const Icon(Icons.edit_outlined),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final tableWidth = constraints.maxWidth < 620
+                  ? 620.0
+                  : constraints.maxWidth;
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: tableWidth,
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Actions')),
+                    ],
+                    rows: [
+                      for (var index = 0; index < _petTypes.length; index++)
+                        DataRow.byIndex(
+                          index: index,
+                          color: WidgetStatePropertyAll(
+                            index.isEven
+                                ? Colors.white
+                                : const Color(0xFFF8F8F8),
+                          ),
+                          cells: [
+                            DataCell(
+                              DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: ClassicPalette.border,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 8,
+                                  ),
+                                  child: Text(_petTypes[index].name),
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  OutlinedButton(
+                                    onPressed: () =>
+                                        _openForm(petType: _petTypes[index]),
+                                    style: ClassicPalette.editButtonStyle(),
+                                    child: const Text('Edit'),
+                                  ),
+                                  OutlinedButton(
+                                    onPressed: () =>
+                                        _deletePetType(_petTypes[index]),
+                                    style: ClassicPalette.deleteButtonStyle(),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => _deletePetType(petType),
-                    icon: const Icon(Icons.delete_outline),
-                  ),
-                ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                child: const Text('Home'),
               ),
-            ),
-          );
-        },
+              OutlinedButton(
+                onPressed: () => _openForm(),
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

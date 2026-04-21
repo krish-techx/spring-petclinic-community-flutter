@@ -41,6 +41,13 @@ void main() {
   testWidgets('requires confirmation before deleting a veterinarian', (
     WidgetTester tester,
   ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(1400, 1000);
+    addTearDown(() {
+      tester.view.resetDevicePixelRatio();
+      tester.view.resetPhysicalSize();
+    });
+
     final vetService = FakeVetService([
       const Vet(
         id: 1,
@@ -57,7 +64,11 @@ void main() {
 
     expect(find.text('James Carter'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    final deleteButton = find
+        .widgetWithText(OutlinedButton, 'Delete Vet')
+        .first;
+    await tester.ensureVisible(deleteButton);
+    await tester.tap(deleteButton);
     await tester.pumpAndSettle();
 
     expect(vetService.deleteCalls, 0);

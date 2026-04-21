@@ -16,8 +16,10 @@
 
 import 'package:flutter/material.dart';
 
+import '../../shared/navigation/app_routes.dart';
+import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/confirmation_dialog.dart';
-import '../../shared/widgets/page_width.dart';
+import '../../shared/widgets/classic_scaffold.dart';
 import 'vet.dart';
 import 'vet_form_screen.dart';
 import 'vet_service.dart';
@@ -119,14 +121,10 @@ class _VetListScreenState extends State<VetListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Veterinarians')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Vet'),
-      ),
-      body: AppPageWidth(child: _buildBody()),
+    return ClassicScaffold(
+      section: ClassicSection.veterinarians,
+      title: 'Veterinarians',
+      body: _buildBody(),
     );
   }
 
@@ -152,45 +150,121 @@ class _VetListScreenState extends State<VetListScreen> {
     }
 
     if (_vets.isEmpty) {
-      return const Center(child: Text('No veterinarians found.'));
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        children: [
+          const Text('No veterinarians found.'),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                child: const Text('Home'),
+              ),
+              OutlinedButton(
+                onPressed: () => _openForm(),
+                child: const Text('Add Vet'),
+              ),
+            ],
+          ),
+        ],
+      );
     }
 
     return RefreshIndicator(
       onRefresh: _loadVets,
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-        itemCount: _vets.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final vet = _vets[index];
-          final specialties = vet.specialties.isEmpty
-              ? 'No specialties'
-              : vet.specialties.map((specialty) => specialty.name).join(', ');
-
-          return Card(
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              title: Text(vet.fullName),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text('Specialties: $specialties'),
-              ),
-              trailing: Wrap(
-                spacing: 4,
-                children: [
-                  IconButton(
-                    onPressed: () => _openForm(vetId: vet.id),
-                    icon: const Icon(Icons.edit_outlined),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final tableWidth = constraints.maxWidth < 780
+                  ? 780.0
+                  : constraints.maxWidth;
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: tableWidth,
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Specialties')),
+                      DataColumn(label: Text('Actions')),
+                    ],
+                    rows: [
+                      for (var index = 0; index < _vets.length; index++)
+                        DataRow.byIndex(
+                          index: index,
+                          color: WidgetStatePropertyAll(
+                            index.isEven
+                                ? Colors.white
+                                : const Color(0xFFF8F8F8),
+                          ),
+                          cells: [
+                            DataCell(Text(_vets[index].fullName)),
+                            DataCell(
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (_vets[index].specialties.isEmpty)
+                                    const Text('none')
+                                  else
+                                    for (final specialty
+                                        in _vets[index].specialties)
+                                      Text(specialty.name),
+                                ],
+                              ),
+                            ),
+                            DataCell(
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  OutlinedButton(
+                                    onPressed: () =>
+                                        _openForm(vetId: _vets[index].id),
+                                    style: ClassicPalette.editButtonStyle(),
+                                    child: const Text('Edit Vet'),
+                                  ),
+                                  OutlinedButton(
+                                    onPressed: () => _deleteVet(_vets[index]),
+                                    style: ClassicPalette.deleteButtonStyle(),
+                                    child: const Text('Delete Vet'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => _deleteVet(vet),
-                    icon: const Icon(Icons.delete_outline),
-                  ),
-                ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                child: const Text('Home'),
               ),
-            ),
-          );
-        },
+              OutlinedButton(
+                onPressed: () => _openForm(),
+                child: const Text('Add Vet'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../theme/classic_theme.dart';
+
 Future<bool> showConfirmationDialog(
   BuildContext context, {
   required String title,
@@ -25,7 +27,6 @@ Future<bool> showConfirmationDialog(
   final result = await showDialog<bool>(
     context: context,
     builder: (dialogContext) {
-      final colorScheme = Theme.of(dialogContext).colorScheme;
       return AlertDialog(
         title: Text(title),
         content: Text(message),
@@ -34,11 +35,8 @@ Future<bool> showConfirmationDialog(
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: const Text('Cancel'),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: colorScheme.error,
-              foregroundColor: colorScheme.onError,
-            ),
+          OutlinedButton(
+            style: ClassicPalette.deleteButtonStyle(),
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: Text(confirmLabel),
           ),
