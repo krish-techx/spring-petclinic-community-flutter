@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/link.dart';
 
 import '../navigation/app_routes.dart';
 import '../theme/classic_theme.dart';
@@ -42,7 +43,10 @@ class ClassicScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.sizeOf(context).width >= 900;
+    final screenSize = MediaQuery.sizeOf(context);
+    final isWide = screenSize.width >= 900;
+    final isShort = screenSize.height < 520;
+    final bodyVerticalPadding = isShort ? 16.0 : 24.0;
 
     return Scaffold(
       appBar: isWide ? null : const _MobileTopBar(),
@@ -53,7 +57,12 @@ class ClassicScaffold extends StatelessWidget {
           if (isWide) _WideTopBar(section: section),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                bodyVerticalPadding,
+                16,
+                bodyVerticalPadding,
+              ),
               child: AppPageWidth(
                 maxWidth: 1180,
                 child: Column(
@@ -72,7 +81,7 @@ class ClassicScaffold extends StatelessWidget {
               ),
             ),
           ),
-          if (isWide && showFooter) const _ClassicFooter(),
+          if (showFooter) const _ClassicFooter(),
         ],
       ),
     );
@@ -128,11 +137,7 @@ class _WideTopBar extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 24),
-                child: Image.asset(
-                  'assets/images/spring-logo-dataflow.png',
-                  height: 46,
-                  fit: BoxFit.contain,
-                ),
+                child: const _DesktopBrandLogo(),
               ),
               for (final item in _navItems)
                 Padding(
@@ -149,6 +154,8 @@ class _WideTopBar extends StatelessWidget {
                     label: Text(
                       item.label.toUpperCase(),
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w400,
                         color: item.section == section
                             ? ClassicPalette.accent
                             : Colors.white,
@@ -157,6 +164,32 @@ class _WideTopBar extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopBrandLogo extends StatelessWidget {
+  const _DesktopBrandLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 229,
+      height: 46,
+      child: FittedBox(
+        fit: BoxFit.none,
+        alignment: Alignment.topLeft,
+        clipBehavior: Clip.hardEdge,
+        child: Transform.translate(
+          offset: const Offset(-1, -1),
+          child: Image(
+            image: AssetImage('assets/images/spring-logo-dataflow.png'),
+            width: 229,
+            height: 94,
+            fit: BoxFit.none,
           ),
         ),
       ),
@@ -200,7 +233,12 @@ class _ClassicDrawer extends StatelessWidget {
                     ? ClassicPalette.accent
                     : ClassicPalette.text,
               ),
-              title: Text(item.label),
+              title: Text(
+                item.label,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontFamily: 'Montserrat'),
+              ),
               selected: item.section == section,
               onTap: item.section == section
                   ? () => Navigator.of(context).pop()
@@ -220,17 +258,69 @@ class _ClassicFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.sizeOf(context);
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        screenSize.height < 520 ? 12 : 24,
+      ),
       child: AppPageWidth(
         maxWidth: 1180,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/icon_flutter.png', height: 70),
-            const SizedBox(width: 20),
-            Image.asset('assets/images/spring-pivotal-logo.png', height: 42),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isCompact = constraints.maxWidth < 640;
+            final isShort = screenSize.height < 520;
+            final footerTextStyle = (isCompact || isShort)
+                ? Theme.of(context).textTheme.bodySmall
+                : Theme.of(context).textTheme.bodyMedium;
+            final logoSpacing = isCompact || isShort ? 12.0 : 20.0;
+
+            return Column(
+              children: [
+                Link(
+                  uri: Uri.parse(
+                    'https://github.com/San-43/spring-petclinic-flutter',
+                  ),
+                  target: LinkTarget.blank,
+                  builder: (context, followLink) => InkWell(
+                    onTap: followLink,
+                    child: Text(
+                      'Spring Petclinic Flutter Sample Application',
+                      textAlign: TextAlign.center,
+                      style: footerTextStyle?.copyWith(
+                        color: ClassicPalette.accent,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: isCompact || isShort ? 10 : 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/images/icon_flutter.png',
+                          height: 70,
+                        ),
+                        SizedBox(width: logoSpacing),
+                        Image.asset(
+                          'assets/images/spring-pivotal-logo.png',
+                          height: 42,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

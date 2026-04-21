@@ -14,18 +14,54 @@
  * limitations under the License.
  */
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:spring_petclinic_flutter/main.dart';
 
 void main() {
-  testWidgets('renders Spring Petclinic home screen', (
+  void configureSurface(WidgetTester tester, Size size) {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = size;
+    addTearDown(() {
+      tester.view.resetDevicePixelRatio();
+      tester.view.resetPhysicalSize();
+    });
+  }
+
+  testWidgets('renders desktop home navigation and footer', (
     WidgetTester tester,
   ) async {
+    configureSurface(tester, const Size(1400, 1000));
+
     await tester.pumpWidget(const PetClinicApp());
+    await tester.pumpAndSettle();
 
     expect(find.text('Welcome to Petclinic'), findsOneWidget);
-    expect(find.text('Owners'), findsOneWidget);
-    expect(find.text('Veterinarians'), findsOneWidget);
+    expect(find.text('HOME'), findsOneWidget);
+    expect(find.text('OWNERS'), findsOneWidget);
+    expect(find.text('VETERINARIANS'), findsOneWidget);
+    expect(
+      find.text('Spring Petclinic Flutter Sample Application'),
+      findsOneWidget,
+    );
+    expect(find.byType(Image), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('renders home without overflow on short landscape screens', (
+    WidgetTester tester,
+  ) async {
+    configureSurface(tester, const Size(800, 360));
+
+    await tester.pumpWidget(const PetClinicApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome to Petclinic'), findsOneWidget);
+    expect(
+      find.text('Spring Petclinic Flutter Sample Application'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
   });
 }

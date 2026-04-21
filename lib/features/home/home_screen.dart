@@ -16,9 +16,6 @@
 
 import 'package:flutter/material.dart';
 
-import '../../shared/config/api_config.dart';
-import '../../shared/navigation/app_routes.dart';
-import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/classic_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -26,104 +23,44 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final entries = <_HomeEntry>[
-      _HomeEntry(
-        title: 'Owners',
-        icon: Icons.people_alt_outlined,
-        routeName: AppRoutes.owners,
-      ),
-      _HomeEntry(
-        title: 'Veterinarians',
-        icon: Icons.medical_services_outlined,
-        routeName: AppRoutes.veterinarians,
-      ),
-      _HomeEntry(
-        title: 'Pet Types',
-        icon: Icons.pets_outlined,
-        routeName: AppRoutes.petTypes,
-      ),
-      _HomeEntry(
-        title: 'Specialties',
-        icon: Icons.list_alt_outlined,
-        routeName: AppRoutes.specialties,
-      ),
-    ];
-
     return ClassicScaffold(
       section: ClassicSection.home,
       title: 'Spring Petclinic',
       showPageTitle: false,
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
-        children: [
-          Text(
-            'Welcome to Petclinic',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 20),
-          Text('Welcome', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 12),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: ClassicPalette.border),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Image.asset('assets/images/pets.png', fit: BoxFit.contain),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Jump directly to a section:',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final entry in entries)
-                OutlinedButton.icon(
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed(entry.routeName),
-                  icon: Icon(entry.icon, size: 18),
-                  label: Text(entry.title),
-                ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Text(
-            'This app targets the same REST API used by the Angular frontend.',
-          ),
-          const SizedBox(height: 10),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: ClassicPalette.border),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: SelectableText(
-                'API: ${ApiConfig.baseUrl}',
-                style: Theme.of(context).textTheme.bodySmall,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final imageHeight = (constraints.maxHeight * 0.72).clamp(
+            140.0,
+            320.0,
+          );
+          final compactSpacing = constraints.maxHeight < 320;
+
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: compactSpacing ? 4 : 8),
+                  Text(
+                    'Welcome to Petclinic',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  SizedBox(height: compactSpacing ? 8 : 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Image.asset(
+                      'assets/images/pets.png',
+                      height: imageHeight,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
-}
-
-class _HomeEntry {
-  const _HomeEntry({
-    required this.title,
-    required this.icon,
-    required this.routeName,
-  });
-
-  final String title;
-  final IconData icon;
-  final String routeName;
 }
