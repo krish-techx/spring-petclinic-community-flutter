@@ -138,9 +138,7 @@ class _WideTopBar extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: TextButton.icon(
-                    onPressed: item.section == section
-                        ? null
-                        : () => _navigateTo(context, item.route),
+                    onPressed: () => _navigateTo(context, item.route),
                     icon: Icon(
                       item.icon,
                       size: 16,
