@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/classic_scaffold.dart';
 import 'owner.dart';
 import 'owner_detail_screen.dart';
@@ -108,49 +109,14 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
     return ClassicScaffold(
       section: ClassicSection.owners,
       title: 'Owners',
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openOwnerForm,
-        icon: const Icon(Icons.add),
-        label: const Text('Add Owner'),
-      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final stacked = constraints.maxWidth < 520;
-                final field = TextField(
-                  controller: _searchController,
-                  textInputAction: TextInputAction.search,
-                  decoration: const InputDecoration(
-                    labelText: 'Last name',
-                    prefixIcon: Icon(Icons.search),
-                  ),
-                  onSubmitted: (_) =>
-                      _loadOwners(lastName: _searchController.text.trim()),
-                );
-                final button = FilledButton(
-                  onPressed: () =>
-                      _loadOwners(lastName: _searchController.text.trim()),
-                  child: const Text('Find'),
-                );
-
-                if (stacked) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [field, const SizedBox(height: 12), button],
-                  );
-                }
-
-                return Row(
-                  children: [
-                    Expanded(child: field),
-                    const SizedBox(width: 12),
-                    button,
-                  ],
-                );
-              },
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: _SearchOwnersForm(
+              controller: _searchController,
+              onSearch: () =>
+                  _loadOwners(lastName: _searchController.text.trim()),
             ),
           ),
           Expanded(child: _buildContent()),
@@ -187,36 +153,250 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
       final message = _activeQuery.isEmpty
           ? 'No owners found.'
           : 'No owners with last name starting with "$_activeQuery".';
-      return Center(child: Text(message));
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Align(alignment: Alignment.topLeft, child: Text(message)),
+      );
     }
 
     return RefreshIndicator(
       onRefresh: () => _loadOwners(lastName: _activeQuery),
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-        itemCount: _owners.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final owner = _owners[index];
-          final petsLabel = owner.pets.isEmpty
-              ? 'No pets'
-              : owner.pets.map((pet) => pet.name).join(', ');
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final tableWidth = constraints.maxWidth < 760
+                  ? 760.0
+                  : constraints.maxWidth;
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: tableWidth,
+                  child: _OwnersTable(
+                    owners: _owners,
+                    onOpenOwner: _openOwnerDetail,
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton(
+              onPressed: _openOwnerForm,
+              child: const Text('Add Owner'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-          return Card(
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              title: Text(owner.fullName),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  '${owner.address}\n${owner.city}\nTelephone: ${owner.telephone}\nPets: $petsLabel',
+class _SearchOwnersForm extends StatelessWidget {
+  const _SearchOwnersForm({required this.controller, required this.onSearch});
+
+  final TextEditingController controller;
+  final VoidCallback onSearch;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 680;
+
+        if (!wide) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: controller,
+                textInputAction: TextInputAction.search,
+                decoration: const InputDecoration(labelText: 'Last name'),
+                onSubmitted: (_) => onSearch(),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: onSearch,
+                child: const Text('Find Owner'),
+              ),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 130,
+                  child: Text(
+                    'Last name',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    textInputAction: TextInputAction.search,
+                    decoration: const InputDecoration(),
+                    onSubmitted: (_) => onSearch(),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(left: 130),
+              child: OutlinedButton(
+                onPressed: onSearch,
+                child: const Text('Find Owner'),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _OwnersTable extends StatelessWidget {
+  const _OwnersTable({required this.owners, required this.onOpenOwner});
+
+  final List<Owner> owners;
+  final ValueChanged<Owner> onOpenOwner;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: ClassicPalette.border),
+      ),
+      child: Table(
+        columnWidths: const {
+          0: FlexColumnWidth(2.2),
+          1: FlexColumnWidth(2.6),
+          2: FlexColumnWidth(1.5),
+          3: FlexColumnWidth(1.7),
+          4: FlexColumnWidth(1.2),
+        },
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: [
+          TableRow(
+            decoration: const BoxDecoration(color: ClassicPalette.tableHeader),
+            children: const [
+              _HeaderCell('Name'),
+              _HeaderCell('Address'),
+              _HeaderCell('City'),
+              _HeaderCell('Telephone'),
+              _HeaderCell('Pets'),
+            ],
+          ),
+          for (var index = 0; index < owners.length; index++)
+            TableRow(
+              decoration: BoxDecoration(
+                color: index.isEven ? Colors.white : const Color(0xFFF8F8F8),
+                border: const Border(
+                  bottom: BorderSide(color: ClassicPalette.border),
                 ),
               ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _openOwnerDetail(owner),
+              children: [
+                _LinkCell(
+                  label: owners[index].fullName,
+                  onTap: () => onOpenOwner(owners[index]),
+                ),
+                _DataCellText(owners[index].address),
+                _DataCellText(owners[index].city),
+                _DataCellText(owners[index].telephone),
+                _PetsCell(
+                  pets: owners[index].pets.map((pet) => pet.name).toList(),
+                ),
+              ],
             ),
-          );
-        },
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderCell extends StatelessWidget {
+  const _HeaderCell(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.titleSmall?.copyWith(color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _DataCellText extends StatelessWidget {
+  const _DataCellText(this.value);
+
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Text(value),
+    );
+  }
+}
+
+class _LinkCell extends StatelessWidget {
+  const _LinkCell({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: InkWell(
+          onTap: onTap,
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: ClassicPalette.accent,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PetsCell extends StatelessWidget {
+  const _PetsCell({required this.pets});
+
+  final List<String> pets;
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = pets.isEmpty ? const [''] : pets;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [for (final pet in entries) Text(pet)],
       ),
     );
   }
