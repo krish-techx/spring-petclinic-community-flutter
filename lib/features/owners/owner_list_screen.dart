@@ -111,18 +111,25 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
     return ClassicScaffold(
       section: ClassicSection.owners,
       title: 'Owners',
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: _SearchOwnersForm(
-              controller: _searchController,
-              onSearch: () =>
-                  _loadOwners(lastName: _searchController.text.trim()),
-            ),
-          ),
-          Expanded(child: _buildContent()),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxHeight < 180;
+
+          return Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(16, 0, 16, compact ? 8 : 16),
+                child: _SearchOwnersForm(
+                  controller: _searchController,
+                  compact: compact,
+                  onSearch: () =>
+                      _loadOwners(lastName: _searchController.text.trim()),
+                ),
+              ),
+              Expanded(child: _buildContent()),
+            ],
+          );
+        },
       ),
     );
   }
@@ -133,21 +140,19 @@ class _OwnerListScreenState extends State<OwnerListScreen> {
     }
 
     if (_errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(_errorMessage!, textAlign: TextAlign.center),
-              const SizedBox(height: 12),
-              FilledButton(
-                onPressed: () => _loadOwners(lastName: _activeQuery),
-                child: const Text('Retry'),
-              ),
-            ],
+      return ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Text(_errorMessage!, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.center,
+            child: FilledButton(
+              onPressed: () => _loadOwners(lastName: _activeQuery),
+              child: const Text('Retry'),
+            ),
           ),
-        ),
+        ],
       );
     }
 
@@ -254,10 +259,15 @@ class _OwnersEmptyState extends StatelessWidget {
 }
 
 class _SearchOwnersForm extends StatelessWidget {
-  const _SearchOwnersForm({required this.controller, required this.onSearch});
+  const _SearchOwnersForm({
+    required this.controller,
+    required this.onSearch,
+    this.compact = false,
+  });
 
   final TextEditingController controller;
   final VoidCallback onSearch;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -275,7 +285,7 @@ class _SearchOwnersForm extends StatelessWidget {
                 decoration: const InputDecoration(labelText: 'Last name'),
                 onSubmitted: (_) => onSearch(),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: compact ? 8 : 12),
               OutlinedButton(
                 onPressed: onSearch,
                 child: const Text('Find Owner'),
@@ -307,7 +317,7 @@ class _SearchOwnersForm extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: compact ? 8 : 12),
             Padding(
               padding: const EdgeInsets.only(left: 130),
               child: OutlinedButton(

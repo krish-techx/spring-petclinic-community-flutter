@@ -29,34 +29,30 @@ class HomeScreen extends StatelessWidget {
       showPageTitle: false,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final imageHeight = (constraints.maxHeight * 0.72).clamp(
-            140.0,
-            320.0,
-          );
+          final isShort = constraints.maxHeight < 320;
+          final imageHeight = (constraints.maxHeight * (isShort ? 0.5 : 0.72))
+              .clamp(isShort ? 88.0 : 120.0, 320.0);
           final compactSpacing = constraints.maxHeight < 320;
 
           return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: compactSpacing ? 4 : 8),
-                  Text(
-                    'Welcome to Petclinic',
-                    style: Theme.of(context).textTheme.headlineMedium,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: compactSpacing ? 4 : 8),
+                Text(
+                  'Welcome to Petclinic',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                SizedBox(height: compactSpacing ? 8 : 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Image.asset(
+                    'assets/images/pets.png',
+                    height: imageHeight,
+                    fit: BoxFit.contain,
                   ),
-                  SizedBox(height: compactSpacing ? 8 : 12),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Image.asset(
-                      'assets/images/pets.png',
-                      height: imageHeight,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },

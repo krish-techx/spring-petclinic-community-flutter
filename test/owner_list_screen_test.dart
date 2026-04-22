@@ -45,6 +45,15 @@ void main() {
     });
   }
 
+  void configureShortLandscapeSurface(WidgetTester tester) {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(740, 260);
+    addTearDown(() {
+      tester.view.resetDevicePixelRatio();
+      tester.view.resetPhysicalSize();
+    });
+  }
+
   testWidgets('places Add Owner below the owners table on the left', (
     WidgetTester tester,
   ) async {
@@ -81,4 +90,58 @@ void main() {
       greaterThan(tester.getBottomLeft(ownerName).dy),
     );
   });
+
+  testWidgets(
+    'renders owner list without overflow on short landscape screens',
+    (WidgetTester tester) async {
+      configureShortLandscapeSurface(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: OwnerListScreen(
+            ownerService: FakeOwnerService(
+              owners: const [
+                Owner(
+                  id: 1,
+                  firstName: 'Harold',
+                  lastName: 'Davis',
+                  address: '563 Friendly St.',
+                  city: 'Windsor',
+                  telephone: '6085553198',
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Owners'), findsOneWidget);
+      expect(find.text('Harold Davis'), findsOneWidget);
+      expect(
+        find.text('Spring Petclinic Flutter Sample Application'),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'renders owner list error state without overflow on short landscape screens',
+    (WidgetTester tester) async {
+      configureShortLandscapeSurface(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: OwnerListScreen(
+            ownerService: FakeOwnerService(error: 'Network error'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Owners'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
