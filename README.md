@@ -12,6 +12,7 @@ the functional flows of the Angular frontend, and uses the same REST backend exp
 
 <p align="center">
   <img src="docs/screenshots/web-owners.png" width="900" alt="Spring Petclinic owners screen on web" />
+  <img src="docs/screenshots/web-owners-details.png" width="900" alt="Spring Petclinic owners details screen on web" />
 </p>
 
 ### Android

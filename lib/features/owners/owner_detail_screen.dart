@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 import '../../shared/theme/classic_theme.dart';
 import '../../shared/widgets/classic_scaffold.dart';
@@ -244,6 +245,7 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final owner = _owner;
+    final compactDesktop = MediaQuery.sizeOf(context).width >= 900;
 
     return ClassicScaffold(
       section: ClassicSection.owners,
@@ -272,10 +274,10 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
           : RefreshIndicator(
               onRefresh: _loadOwner,
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+                padding: EdgeInsets.fromLTRB(0, 0, 0, compactDesktop ? 12 : 24),
                 children: [
-                  _OwnerInfoTable(owner: owner),
-                  const SizedBox(height: 12),
+                  _OwnerInfoTable(owner: owner, dense: compactDesktop),
+                  SizedBox(height: compactDesktop ? 8 : 12),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -310,12 +312,14 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: compactDesktop ? 18 : 28),
                   Text(
                     'Pets and Visits',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: compactDesktop
+                        ? Theme.of(context).textTheme.titleMedium
+                        : Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: compactDesktop ? 10 : 16),
                   if (owner.pets.isEmpty)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
@@ -324,8 +328,11 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                   else
                     for (final pet in owner.pets)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
+                        padding: EdgeInsets.only(
+                          bottom: compactDesktop ? 12 : 16,
+                        ),
                         child: _PetAndVisitsSection(
+                          dense: compactDesktop,
                           pet: pet,
                           onEditPet: () => _openPetForm(petId: pet.id),
                           onDeletePet: () => _deletePet(pet),
@@ -343,13 +350,15 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
 }
 
 class _OwnerInfoTable extends StatelessWidget {
-  const _OwnerInfoTable({required this.owner});
+  const _OwnerInfoTable({required this.owner, this.dense = false});
 
   final Owner owner;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     return _ClassicInfoTable(
+      dense: dense,
       rows: [
         _InfoRow(
           label: 'Name',
@@ -370,6 +379,7 @@ class _OwnerInfoTable extends StatelessWidget {
 
 class _PetAndVisitsSection extends StatelessWidget {
   const _PetAndVisitsSection({
+    this.dense = false,
     required this.pet,
     required this.onEditPet,
     required this.onDeletePet,
@@ -384,6 +394,7 @@ class _PetAndVisitsSection extends StatelessWidget {
   final VoidCallback onAddVisit;
   final ValueChanged<Visit> onEditVisit;
   final ValueChanged<Visit> onDeleteVisit;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -393,17 +404,23 @@ class _PetAndVisitsSection extends StatelessWidget {
         border: Border.all(color: ClassicPalette.border),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(dense ? 8 : 12),
         child: LayoutBuilder(
           builder: (context, constraints) {
             final wide = constraints.maxWidth >= 860;
+            final visitsPanelWidth = wide
+                ? ((constraints.maxWidth - 18) * 0.6)
+                : constraints.maxWidth;
             final infoPanel = _PetInfoPanel(
+              dense: dense,
               pet: pet,
               onEditPet: onEditPet,
               onDeletePet: onDeletePet,
               onAddVisit: onAddVisit,
             );
             final visitsPanel = _VisitsPanel(
+              availableWidth: visitsPanelWidth,
+              dense: dense,
               visits: pet.visits,
               onEditVisit: onEditVisit,
               onDeleteVisit: onDeleteVisit,
@@ -412,7 +429,11 @@ class _PetAndVisitsSection extends StatelessWidget {
             if (!wide) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [infoPanel, const SizedBox(height: 16), visitsPanel],
+                children: [
+                  infoPanel,
+                  SizedBox(height: dense ? 12 : 16),
+                  visitsPanel,
+                ],
               );
             }
 
@@ -420,7 +441,7 @@ class _PetAndVisitsSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(flex: 4, child: infoPanel),
-                const SizedBox(width: 18),
+                SizedBox(width: dense ? 12 : 18),
                 Expanded(flex: 6, child: visitsPanel),
               ],
             );
@@ -433,6 +454,7 @@ class _PetAndVisitsSection extends StatelessWidget {
 
 class _PetInfoPanel extends StatelessWidget {
   const _PetInfoPanel({
+    this.dense = false,
     required this.pet,
     required this.onEditPet,
     required this.onDeletePet,
@@ -443,36 +465,46 @@ class _PetInfoPanel extends StatelessWidget {
   final VoidCallback onEditPet;
   final VoidCallback onDeletePet;
   final VoidCallback onAddVisit;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
+    final actionPadding = dense
+        ? const EdgeInsets.symmetric(horizontal: 10, vertical: 8)
+        : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _ClassicInfoTable(
+          dense: dense,
           rows: [
             _InfoRow(label: 'Name', value: Text(pet.name)),
             _InfoRow(label: 'Birth Date', value: Text(pet.birthDate)),
             _InfoRow(label: 'Type', value: Text(pet.type.name)),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: dense ? 8 : 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
             OutlinedButton(
               onPressed: onEditPet,
-              style: ClassicPalette.editButtonStyle(),
+              style: ClassicPalette.editButtonStyle(padding: actionPadding),
               child: const Text('Edit Pet'),
             ),
             OutlinedButton(
               onPressed: onDeletePet,
-              style: ClassicPalette.deleteButtonStyle(),
+              style: ClassicPalette.deleteButtonStyle(padding: actionPadding),
               child: const Text('Delete Pet'),
             ),
             OutlinedButton(
               onPressed: onAddVisit,
+              style: OutlinedButton.styleFrom(
+                padding: actionPadding,
+                minimumSize: const Size(0, 38),
+                visualDensity: VisualDensity.compact,
+              ),
               child: const Text('Add Visit'),
             ),
           ],
@@ -484,11 +516,15 @@ class _PetInfoPanel extends StatelessWidget {
 
 class _VisitsPanel extends StatelessWidget {
   const _VisitsPanel({
+    required this.availableWidth,
+    this.dense = false,
     required this.visits,
     required this.onEditVisit,
     required this.onDeleteVisit,
   });
 
+  final double availableWidth;
+  final bool dense;
   final List<Visit> visits;
   final ValueChanged<Visit> onEditVisit;
   final ValueChanged<Visit> onDeleteVisit;
@@ -501,8 +537,8 @@ class _VisitsPanel extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 420),
+      child: SizedBox(
+        width: math.max(620, availableWidth),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -520,10 +556,10 @@ class _VisitsPanel extends StatelessWidget {
                 decoration: const BoxDecoration(
                   color: ClassicPalette.tableHeader,
                 ),
-                children: const [
-                  _HeaderCell('Visit Date'),
-                  _HeaderCell('Description'),
-                  _HeaderCell('Actions'),
+                children: [
+                  _HeaderCell('Visit Date', dense: dense),
+                  _HeaderCell('Description', dense: dense),
+                  _HeaderCell('Actions', dense: dense),
                 ],
               ),
               for (var index = 0; index < visits.length; index++)
@@ -537,12 +573,12 @@ class _VisitsPanel extends StatelessWidget {
                     ),
                   ),
                   children: [
-                    _DataCellText(visits[index].date),
-                    _DataCellText(visits[index].description),
+                    _DataCellText(visits[index].date, dense: dense),
+                    _DataCellText(visits[index].description, dense: dense),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 10,
+                        vertical: dense ? 8 : 10,
                       ),
                       child: Wrap(
                         spacing: 8,
@@ -552,8 +588,8 @@ class _VisitsPanel extends StatelessWidget {
                             onPressed: () => onEditVisit(visits[index]),
                             style: ClassicPalette.editButtonStyle(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                                horizontal: 10,
+                                vertical: 6,
                               ),
                             ),
                             child: const Text('Edit'),
@@ -562,8 +598,8 @@ class _VisitsPanel extends StatelessWidget {
                             onPressed: () => onDeleteVisit(visits[index]),
                             style: ClassicPalette.deleteButtonStyle(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                                horizontal: 10,
+                                vertical: 6,
                               ),
                             ),
                             child: const Text('Delete'),
@@ -582,9 +618,10 @@ class _VisitsPanel extends StatelessWidget {
 }
 
 class _ClassicInfoTable extends StatelessWidget {
-  const _ClassicInfoTable({required this.rows});
+  const _ClassicInfoTable({required this.rows, this.dense = false});
 
   final List<_InfoRow> rows;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -607,9 +644,9 @@ class _ClassicInfoTable extends StatelessWidget {
               ),
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 12,
+                    vertical: dense ? 9 : 12,
                   ),
                   child: Text(
                     rows[index].label,
@@ -617,9 +654,9 @@ class _ClassicInfoTable extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 12,
+                    vertical: dense ? 9 : 12,
                   ),
                   child: rows[index].value,
                 ),
@@ -639,14 +676,15 @@ class _InfoRow {
 }
 
 class _HeaderCell extends StatelessWidget {
-  const _HeaderCell(this.label);
+  const _HeaderCell(this.label, {this.dense = false});
 
   final String label;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: dense ? 10 : 14),
       child: Text(
         label,
         style: Theme.of(
@@ -658,14 +696,15 @@ class _HeaderCell extends StatelessWidget {
 }
 
 class _DataCellText extends StatelessWidget {
-  const _DataCellText(this.value);
+  const _DataCellText(this.value, {this.dense = false});
 
   final String value;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: dense ? 9 : 12),
       child: Text(value),
     );
   }

@@ -139,30 +139,40 @@ class _WideTopBar extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 24),
                 child: const _DesktopBrandLogo(),
               ),
-              for (final item in _navItems)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: TextButton.icon(
-                    onPressed: () => _navigateTo(context, item.route),
-                    icon: Icon(
-                      item.icon,
-                      size: 16,
-                      color: item.section == section
-                          ? ClassicPalette.accent
-                          : Colors.white,
-                    ),
-                    label: Text(
-                      item.label.toUpperCase(),
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.w400,
-                        color: item.section == section
-                            ? ClassicPalette.accent
-                            : Colors.white,
-                      ),
-                    ),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (final item in _navItems)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: TextButton.icon(
+                            onPressed: () => _navigateTo(context, item.route),
+                            icon: Icon(
+                              item.icon,
+                              size: 16,
+                              color: item.section == section
+                                  ? ClassicPalette.accent
+                                  : Colors.white,
+                            ),
+                            label: Text(
+                              item.label.toUpperCase(),
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.w400,
+                                    color: item.section == section
+                                        ? ClassicPalette.accent
+                                        : Colors.white,
+                                  ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
+              ),
             ],
           ),
         ),

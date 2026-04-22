@@ -16,7 +16,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:spring_petclinic_flutter/main.dart';
 
 void main() {
@@ -46,6 +45,19 @@ void main() {
       findsOneWidget,
     );
     expect(find.byType(Image), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('renders desktop top bar without overflow near breakpoint', (
+    WidgetTester tester,
+  ) async {
+    configureSurface(tester, const Size(912, 700));
+
+    await tester.pumpWidget(const PetClinicApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('HOME'), findsOneWidget);
+    expect(find.text('OWNERS'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
