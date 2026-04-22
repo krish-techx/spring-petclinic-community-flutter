@@ -52,7 +52,7 @@ void main() {
   testWidgets('renders home without overflow on short landscape screens', (
     WidgetTester tester,
   ) async {
-    configureSurface(tester, const Size(800, 360));
+    configureSurface(tester, const Size(740, 260));
 
     await tester.pumpWidget(const PetClinicApp());
     await tester.pumpAndSettle();
@@ -60,8 +60,25 @@ void main() {
     expect(find.text('Welcome to Petclinic'), findsOneWidget);
     expect(
       find.text('Spring Petclinic Flutter Sample Application'),
-      findsOneWidget,
+      findsNothing,
     );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'opens navigation drawer without overflow on short landscape screens',
+    (WidgetTester tester) async {
+      configureSurface(tester, const Size(740, 260));
+
+      await tester.pumpWidget(const PetClinicApp());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip('Open navigation menu'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Owners'), findsOneWidget);
+      expect(find.byType(ListTile), findsWidgets);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

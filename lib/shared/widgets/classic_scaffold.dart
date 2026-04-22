@@ -46,7 +46,9 @@ class ClassicScaffold extends StatelessWidget {
     final screenSize = MediaQuery.sizeOf(context);
     final isWide = screenSize.width >= 900;
     final isShort = screenSize.height < 520;
-    final bodyVerticalPadding = isShort ? 16.0 : 24.0;
+    final bodyVerticalPadding = isShort ? 8.0 : 24.0;
+    final titleSpacing = isShort ? 12.0 : 20.0;
+    final showFooterInLayout = showFooter && (isWide || !isShort);
 
     return Scaffold(
       appBar: isWide ? null : const _MobileTopBar(),
@@ -73,7 +75,7 @@ class ClassicScaffold extends StatelessWidget {
                         title,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: titleSpacing),
                     ],
                     Expanded(child: body),
                   ],
@@ -81,7 +83,7 @@ class ClassicScaffold extends StatelessWidget {
               ),
             ),
           ),
-          if (showFooter) const _ClassicFooter(),
+          if (showFooterInLayout) const _ClassicFooter(),
         ],
       ),
     );
@@ -205,7 +207,8 @@ class _ClassicDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
             margin: EdgeInsets.zero,
