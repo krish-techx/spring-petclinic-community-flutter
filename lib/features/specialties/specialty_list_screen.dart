@@ -15,13 +15,13 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../shared/navigation/app_routes.dart';
 import '../../shared/theme/classic_theme.dart';
-import '../../shared/widgets/confirmation_dialog.dart';
 import '../../shared/widgets/classic_scaffold.dart';
+import '../../shared/widgets/confirmation_dialog.dart';
 import 'specialty.dart';
-import 'specialty_form_screen.dart';
 import 'specialty_service.dart';
 
 class SpecialtyListScreen extends StatefulWidget {
@@ -75,10 +75,10 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
   }
 
   Future<void> _openForm({Specialty? specialty}) async {
-    final changed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => SpecialtyFormScreen(specialty: specialty),
-      ),
+    final changed = await context.push<bool>(
+      specialty == null
+          ? AppRoutes.specialtyNew
+          : AppRoutes.specialtyEdit(specialty.id!),
     );
     if (changed == true) {
       await _loadSpecialties();
@@ -163,9 +163,7 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
             runSpacing: 8,
             children: [
               OutlinedButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Home'),
               ),
               OutlinedButton(
@@ -259,9 +257,7 @@ class _SpecialtyListScreenState extends State<SpecialtyListScreen> {
             runSpacing: 8,
             children: [
               OutlinedButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Home'),
               ),
               OutlinedButton(

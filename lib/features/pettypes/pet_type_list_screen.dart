@@ -15,13 +15,13 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../shared/navigation/app_routes.dart';
 import '../../shared/theme/classic_theme.dart';
-import '../../shared/widgets/confirmation_dialog.dart';
 import '../../shared/widgets/classic_scaffold.dart';
+import '../../shared/widgets/confirmation_dialog.dart';
 import 'pet_type.dart';
-import 'pet_type_form_screen.dart';
 import 'pet_type_service.dart';
 
 class PetTypeListScreen extends StatefulWidget {
@@ -75,10 +75,10 @@ class _PetTypeListScreenState extends State<PetTypeListScreen> {
   }
 
   Future<void> _openForm({PetType? petType}) async {
-    final changed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => PetTypeFormScreen(petType: petType),
-      ),
+    final changed = await context.push<bool>(
+      petType == null
+          ? AppRoutes.petTypeNew
+          : AppRoutes.petTypeEdit(petType.id!),
     );
     if (changed == true) {
       await _loadPetTypes();
@@ -163,9 +163,7 @@ class _PetTypeListScreenState extends State<PetTypeListScreen> {
             runSpacing: 8,
             children: [
               OutlinedButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Home'),
               ),
               OutlinedButton(
@@ -258,9 +256,7 @@ class _PetTypeListScreenState extends State<PetTypeListScreen> {
             runSpacing: 8,
             children: [
               OutlinedButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Home'),
               ),
               OutlinedButton(
