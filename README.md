@@ -1,7 +1,7 @@
 # Spring Petclinic Flutter
 
-[![Flutter CI](https://github.com/San-43/spring-petclinic-flutter/actions/workflows/dart.yml/badge.svg?branch=master)](https://github.com/San-43/spring-petclinic-flutter/actions/workflows/dart.yml)
-[![Semgrep](https://github.com/San-43/spring-petclinic-flutter/actions/workflows/semgrep.yml/badge.svg?branch=master)](https://github.com/San-43/spring-petclinic-flutter/actions/workflows/semgrep.yml)
+[![Flutter CI](https://github.com/spring-petclinic/spring-petclinic-flutter/actions/workflows/dart.yml/badge.svg?branch=master)](https://github.com/spring-petclinic/spring-petclinic-flutter/actions/workflows/dart.yml)
+[![Semgrep](https://github.com/spring-petclinic/spring-petclinic-flutter/actions/workflows/semgrep.yml/badge.svg?branch=master)](https://github.com/spring-petclinic/spring-petclinic-flutter/actions/workflows/semgrep.yml)
 
 Flutter frontend for [Spring Petclinic](https://github.com/spring-petclinic). This app targets Android and web, mirrors
 the functional flows of the [Angular frontend](https://github.com/spring-petclinic/spring-petclinic-angular), and uses the same REST backend exposed by 
